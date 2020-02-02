@@ -1,9 +1,13 @@
-import os 
-from backend.mongo import * 
-from flask import Flask, render_template, url_for, request, redirect
+import os
+from backend.mongo import *
+from flask import Flask
+from flask_cors import CORS, cross_origin
 
 """Configuration"""
 app = Flask(__name__)
+#cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
+
+CORS(app)
 client = createMongoClient()
 
 """MAIN"""
@@ -40,9 +44,10 @@ def login():
         return "Bad method 405"
 
 @app.route('/api/bounties/map', methods = ['GET'])
+@cross_origin()
 def allBountiesCoordinates():
-    """Return bounty name, price, and coordinates"""
-    print("Get all bounty coordinates:")
+    """return bounty name, price, and coordinates"""
+    print("get all bounty coordinates")
     data = read_bounties(client)
 
     #Filter results to return simply get _id, name, location to populate map. 

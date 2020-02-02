@@ -1,24 +1,33 @@
-import React from 'react';
-import Map from './map';
+import React, {Component} from 'react';
 import {Loader, LoaderOptions} from 'google-maps';
+//import './App.css';
 
-function MyMap() {
+class Map extends Component{
+  constructor(props){
+    super(props)
+    this.map = this.map.bind(this)
 
-  const options: LoaderOptions = {/* todo */};
-  const loader = new Loader(null, options);
+    const options: LoaderOptions = {/* todo */};
+    this.loader = new Loader(null, options);
 
-  loader.load().then(function (google) {
+  }
+
+  map = () => {
+    this.loader.load().then(function (google) {
     const map = new google.maps.Map(document.getElementById('map'), {
         center: {lat: -34.397, lng: 150.644},
         zoom: 8,
       });
-  });
+    });
+  }
 
-  return (
-    <div className="nothin">
-      <p>oop</p>
-    </div>
-  );
+  render(){
+    return (
+      	<div id="map"> 
+          {this.map()}
+        </div>
+      )
+  }
 }
 
-export default MyMap;
+export default Map;
