@@ -60,9 +60,7 @@ def update_bounty_state(client = None, bounty_id = None, new_state = None):
 def update_bounty(client = None, bounty_id = None, new_data = {}):
     with client.start_session(causal_consistency=True) as sess:
         collection = client.rebound.bounty
-        collection.update_one({"_id": ObjectId(bounty_id)}, {"$set": {"name" : new_data["name"], "state": new_state}}, session=sess)
-
-new_data = {"name" : request.form["name"], "price" : request.form["price"], "state" : request.form["state"], "description" : desc = request.form["description"]}
+        collection.update_one({"_id": ObjectId(bounty_id)}, {"$set": {"name" : new_data["name"], "price": new_data["price"], "state": new_state, "desc" = new_data["desc"]}}, session=sess)
 
 #Delete
 def delete_bounty(client = None, bounty_id = None):
