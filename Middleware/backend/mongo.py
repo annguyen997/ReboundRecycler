@@ -11,8 +11,7 @@ def createMongoClient():
 
 def dbAction(action = None, args = None):
     with client.start_session() as sess:
-        session.with_transaction(
-                lambda s: action(s, args))
+        session.with_transaction(lambda s: action(s, args))
 
 #Create
 def create_bounty(client = None, bounty = None):
@@ -21,6 +20,15 @@ def create_bounty(client = None, bounty = None):
         collection.insert_one(bounty, session=sess)
 
 #Read
+def read_bounty(bountyID, client = None):
+    bountyEntry = None
+    with client.start_session(causal_consistency=True) as sess:
+        collection = client.rebound.bounty
+        readonly = collection.with_options(
+            read_preference=ReadPreference.SECONDARY)
+        bountyEntry = readonly.find_one({"_id": bountyID}, session=sess)
+    return bountyEntry
+
 def read_bounties(client = None):
     data = []
     with client.start_session(causal_consistency=True) as sess:
@@ -35,12 +43,12 @@ def read_bounties(client = None):
     return data
 
 def read_userIDFromUsername(usernameEntered, client = None): 
-    userID = "" 
+    userID = None
     with client.start_session(causal_consistency=True) as sess:
         collection = client.rebound.users
         readonly = collection.with_options(
             read_preference=ReadPreference.SECONDARY)
-        userID = readonly.find({"username": usernameEntered}, session=sess)
+        userID = readonly.find_one({"username": usernameEntered}, session=sess)
     return userID
 
 #Update
@@ -48,6 +56,13 @@ def update_bounty_state(client = None, bounty_id = None, new_state = None):
     with client.start_session(causal_consistency=True) as sess:
         collection = client.rebound.bounty
         collection.update_one({"_id": ObjectId(bounty_id)}, {"$set": {"state": new_state}}, session=sess)
+
+def update_bounty(client = None, bounty_id = None, new_data = {}):
+    with client.start_session(causal_consistency=True) as sess:
+        collection = client.rebound.bounty
+        collection.update_one({"_id": ObjectId(bounty_id)}, {"$set": {"name" : new_data["name"], "state": new_state}}, session=sess)
+
+new_data = {"name" : request.form["name"], "price" : request.form["price"], "state" : request.form["state"], "description" : desc = request.form["description"]}
 
 #Delete
 def delete_bounty(client = None, bounty_id = None):

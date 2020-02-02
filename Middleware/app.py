@@ -30,12 +30,12 @@ def index():
 def login():
     """Find a user_id given a supplied username"""
     if request.method == 'POST':
-        data = request.form['username']
-        userID = read_userIDFromUsername(data, client)
+        username = request.form['username']
+        userID = read_userIDFromUsername(username, client)
         if (userID):
             return userID
         else:
-            return null
+            return None
     else:
         return "Bad method 405"
 
@@ -45,23 +45,16 @@ def allBountiesCoordinates():
     print("Get all bounty coordinates:")
     data = read_bounties(client)
 
-    #Logic here to get _id, name, location 
+    #Filter results to return simply get _id, name, location to populate map. 
     data = map(lambda entry : {"_id": entry['_id'], "name" : entry['name'], "location" : entry['location']}, data)
-
     return "{}".format(data) 
 
 @app.route('/api/bounty/<bounty_id>', methods = ['GET', 'POST', 'DELETE'])
 def bountyCRUD(bounty_id):
     if request.method == 'GET':
-        """return the information for <bounty_id>"""
-
-        data = read_bounties(client) 
-
-        for bountyEntry in data: 
-            if bountyEntry["__id"] == bounty_id:
-                return bountyEntry
-                #May need logic to display information from the Entry
-        return "{}"
+        """Return the information for <bounty_id>"""
+        bountyInfo = read_bounty(bounty_id, client) 
+        return bountyInfo; 
 
     if request.method == 'POST':
         """modify/update the information for <bounty_id>"""
@@ -69,13 +62,11 @@ def bountyCRUD(bounty_id):
         # changed to be int or whatever you want, along
         # with your lxml knowledge to make the required
         # changes
-        data = request.form[] # a multidict containing POST data
 
-        name = request.form["name"]
-        price = request.form["price"]
-        description = request.form["request"]
-        state = request.form["state"]
+        #DO NOT CHANGE _id, user_id, location
+        new_data = {"name" : request.form["name"], "price" : request.form["price"], "state" : request.form["state"], "description" : desc = request.form["description"]} #A multidict containing POST data
 
+        
         return "unimplemented"
 
     if request.method == 'DELETE':
@@ -90,8 +81,7 @@ def bountyCRUD(bounty_id):
             if bountyEntry["user_id"] == userID:
                 
                 try:
-                    delete_bounty(client, bountyID)
-                    return redirect('/')
+                    delete_bounty(client, bountyID = request.form["bounty_id"])
                 except: 
                     return 'The bounty was not able to be removed.'
     else:
