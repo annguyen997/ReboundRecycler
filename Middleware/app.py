@@ -13,33 +13,33 @@ client = createMongoClient()
 """MAIN"""
 @app.route('/', methods=['POST', 'GET'])
 def index():
-    """
     if request.method == 'POST':
-        task_content = request.form['content'] #bounty object something... 
-        new_bounty = 
-
+        task_content = request.form['content'] #POST body
+        return ""
+"""
         try:
             db.session.add(new_task)
             db.session.commit()
             return redirect('/')
         except:
             return 'There was an issue loading your task to the application'
-
-    else: #Render the page. 
+"""
+    elif request.method == 'GET': #Render the page. 
+"""
         data = read_bounties(client) 
         return render_template('index.html', data=data)
-    """
-    
+"""
+        return "Homepage TODO"
+    else:
+        return None
+
 @app.route('/api/auth', methods = ['POST'])
 def login():
     """Find a user_id given a supplied username"""
     if request.method == 'POST':
         username = request.form['username']
         userID = read_userIDFromUsername(username, client)
-        if (userID):
-            return userID
-        else:
-            return None
+        return userID
     else:
         return "Bad method 405"
 
@@ -80,15 +80,8 @@ def bountyCRUD(bounty_id):
         userID = request.form["user_id"]
         bountyID = request.form["bounty_id"]
     
-        data = read_bounties(client) 
-
-        for bountyEntry in data: 
-            if bountyEntry["user_id"] == userID:
-                
-                try:
-                    delete_bounty(client, bountyID = request.form["bounty_id"])
-                except: 
-                    return 'The bounty was not able to be removed.'
+        did_delete = delete_bounty(client, bountyID, userID)
+        return did_delete
     else:
         return "Unimplemented. There is a problem understanding the request."
         # POST Error 405 Method Not Allowed
