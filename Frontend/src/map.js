@@ -1,5 +1,7 @@
 import React, {Component} from 'react';
 import {Loader, LoaderOptions} from 'google-maps';
+import MapIcon from './icon.svg'
+import AddBountyLogo from "./Logo1+AddBounty_.svg";
 //import './App.css';
 
 class Map extends Component{
@@ -25,6 +27,11 @@ class Map extends Component{
         map : new google.maps.Map(document.getElementById('map'), {
           center: {lat: 38.8995914, lng: -77.0679584},
           zoom: 15,
+          scaleControl: false,
+          zoomControl: false,
+          mapTypeControl: false,
+          streetViewControl: false,
+          fullscreenControl: false,
         })
       })
     })
@@ -52,13 +59,22 @@ class Map extends Component{
 
   init_map = () => {
     this.state.listings.forEach((entry, i) => {
+        let icon = {
+            url: MapIcon,
+            size: this.state.google.maps.Size(5, 5),
+            scaledSize: this.state.google.maps.Size(25, 25),
+            origin: this.state.google.maps.Point(0, 0),
+            anchor: this.state.google.maps.Point(17, 34),
+          }
         let marker = new this.state.google.maps.Marker({
           map: this.state.map,
           draggable: false,
           position: {
             lat: entry.location.lat, 
             lng: entry.location.lng
-          }
+          },
+          icon: icon
+
         })
         
         this.state.google.maps.event.addListener(marker, 'click', this.render_bounty(entry))
