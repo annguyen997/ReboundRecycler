@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import logo from './logo.svg';
 import Listings from './bounty-listings';
 import Map from './map';
+import Menu from './menu';
 import './App.css';
 
 class App extends Component{
@@ -12,13 +13,10 @@ class App extends Component{
   render(){
     return (
       <div id="overlay">
-	  	<Map/>
-		<Listings/>
-        <div id ="overlay-border">
-        </div>
-        <p className= "opaque-text"> Rebound </p>
+	  	  <Map/>
+        <Menu/>
       </div>
-      )
+    )
   }
 }
 

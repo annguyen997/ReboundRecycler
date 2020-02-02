@@ -14,8 +14,7 @@ class Listings extends Component {
 
 	componentDidMount() {
 		this.setState({renderState: 1})
-		//fetch("https://test-b4gvhsdddq-uc.a.run.app/api/bounties/map", {
-		fetch("http://10.150.242.189:8080/api/bounties/map", {
+		fetch("https://test-b4gvhsdddq-uc.a.run.app/api/bounties/map", {
 			method: 'GET',
 			//mode: 'no-cors',
 			headers: {
@@ -23,11 +22,11 @@ class Listings extends Component {
 				//"Content-Type": "application/json"
 			}
 		})
-		//.then(res => res.json())
+		.then(res => res.json())
 		.then(json => {
 			this.setState({
 					renderState: 2,
-					listings: json
+					listings: this.renderListings(json)
 			});
 		})
 		.then(x => console.log(this.state.listings))
@@ -38,8 +37,18 @@ class Listings extends Component {
 		
 	}	
 
-	renderListings = () => {
-		return (<p>listings!</p>);
+	renderListings = data => {
+		let elements = []
+		data.forEach((entry, key) => {
+			let element = (
+				<div key={key} id="card">
+					<h2>{entry.name}</h2>
+					<p><i>lng: </i>{entry.location.lng}  <i>lat: </i>{entry.location.lat}</p>
+				</div>
+			)
+			elements.push(element)
+		})
+		return elements
 	}
 
 	render(){
@@ -52,7 +61,7 @@ class Listings extends Component {
 					<p>Loading</p>
 				}
 				{this.state.renderState === 2 && 
-					<div>{this.renderListings()}</div>
+					<div>{this.state.listings}</div>
 				}
 	  		</div>
 		);
