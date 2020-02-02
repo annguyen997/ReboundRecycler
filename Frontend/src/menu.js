@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import AddBountyLogo from "./Logo1+AddBounty_.svg";
 
 class Menu extends Component{
   constructor(props){
@@ -16,7 +17,7 @@ class Menu extends Component{
             <p>search</p>
           </a>
           <a id="menu_center">
-            +
+            <img src={AddBountyLogo}/>
           </a>
           <a id="menu_item">
             <p>about</p>
