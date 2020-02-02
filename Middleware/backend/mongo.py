@@ -67,7 +67,7 @@ def delete_bounty(client = None, bounty_id = None, user_id = None):
     #TODO: Check if the user actually owns this bounty!!!
     with client.start_session(causal_consistency=True) as sess:
         collection = client.rebound.bounty
-        entry = collection.find_one({"_id": ObjectId(bounty_id)}, session=sess)
+        #entry = collection.find_one({"_id": ObjectId(bounty_id)}, session=sess)
         #if entry["user_id"] == user_id:
         #   ... not implemented cause entries don't currenly store user ids, whoops!
         #   collection.delete_one({"_id": ObjectId(bounty_id)}, session=sess)
