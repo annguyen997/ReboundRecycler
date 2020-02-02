@@ -72,6 +72,7 @@ def delete_bounty(client = None, bounty_id = None, user_id = None):
         entry = collection.find_one({"_id": ObjectId(bounty_id)}, session=sess)
         #if entry["user_id"] == user_id:
         #   ... not implemented cause entries don't currenly store user ids, whoops!
+        #   collection.delete_one({"_id": ObjectId(bounty_id)}, session=sess)
         collection.delete_one({"_id": ObjectId(bounty_id)}, session=sess)
         success = True
     return success
