@@ -1,4 +1,5 @@
 import os
+import json
 from backend.mongo import *
 from flask import Flask
 from flask_cors import CORS, cross_origin
@@ -16,19 +17,19 @@ def index():
     if request.method == 'POST':
         task_content = request.form['content'] #POST body
         return ""
-"""
+        """
         try:
             db.session.add(new_task)
             db.session.commit()
             return redirect('/')
         except:
             return 'There was an issue loading your task to the application'
-"""
+        """
     elif request.method == 'GET': #Render the page. 
-"""
+        """
         data = read_bounties(client) 
         return render_template('index.html', data=data)
-"""
+        """
         return "Homepage TODO"
     else:
         return None
@@ -51,7 +52,7 @@ def allBountiesCoordinates():
     data = read_bounties(client)
 
     #Filter results to return simply get _id, name, location to populate map. 
-    data = map(lambda entry : {"_id": entry['_id'], "name" : entry['name'], "location" : entry['location']}, data)
+    #data = map(lambda entry : {"_id": entry['_id'], "name" : entry['name'], "location" : entry['location']}, data)
     return "{}".format(data) 
 
 @app.route('/api/bounty/<bounty_id>', methods = ['GET', 'POST', 'DELETE'])
