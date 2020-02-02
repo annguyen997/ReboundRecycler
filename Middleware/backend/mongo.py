@@ -61,8 +61,6 @@ def update_bounty(client = None, bounty_id = None, new_data = {}):
         collection = client.rebound.bounty
         collection.update_one({"_id": ObjectId(bounty_id)}, {"$set": {"name" : new_data["name"], "price": new_data["price"], "state": new_data["state"], "desc" : new_data["desc"]}}, session=sess)
 
-#new_data = {"name" : request.form["name"], "price" : request.form["price"], "state" : request.form["state"], "description" : desc = request.form["description"]}
-
 #Delete
 def delete_bounty(client = None, bounty_id = None, user_id = None):
     success = False
