@@ -60,7 +60,7 @@ def read_userIDFromUsername(usernameEntered, client = None):
 def update_bounty(client = None, bounty_id = None, new_data = {}):
     with client.start_session(causal_consistency=True) as sess:
         collection = client.rebound.bounty
-        collection.update_one({"_id": ObjectId(bounty_id)}, {"$set": {"name" : new_data["name"], "price": new_data["price"], "state": new_state, "desc" = new_data["desc"]}}, session=sess)
+        collection.update_one({"_id": ObjectId(bounty_id)}, {"$set": {"name" : new_data["name"], "price": new_data["price"], "state": new_data["state"], "desc" : new_data["desc"]}}, session=sess)
 
 #Delete
 def delete_bounty(client = None, bounty_id = None):
