@@ -1,4 +1,5 @@
 import bson
+from bson.json_util import loads, dumps
 from bson.objectid import ObjectId
 
 import pymongo
@@ -27,7 +28,7 @@ def read_bounty(bountyID, client = None):
         readonly = collection.with_options(
             read_preference=ReadPreference.SECONDARY)
         bountyEntry = readonly.find_one({"_id": bountyID}, session=sess)
-    return bountyEntry
+    return dumps(bountyEntry)
 
 def read_bounties(client = None):
     data = []
@@ -36,11 +37,8 @@ def read_bounties(client = None):
         readonly = collection.with_options(
             read_preference=ReadPreference.SECONDARY)
         entries = readonly.find({}, session=sess)
-        for entry in entries:
-            data.append([entry])
-            #print("({}) {:10}\t${}\t{}\t\t{:20}".format(
-            #    entry["_id"], entry["name"], entry["price"], entry["state"], entry["desc"]))
-    return data
+        data = [{"_id": _["_id"], "name": _["name"], "location": _["location"]} for _ in entries]
+    return dumps(data)
 
 def read_userIDFromUsername(usernameEntered, client = None): 
     userID = None
@@ -48,8 +46,9 @@ def read_userIDFromUsername(usernameEntered, client = None):
         collection = client.rebound.users
         readonly = collection.with_options(
             read_preference=ReadPreference.SECONDARY)
-        userID = readonly.find_one({"username": usernameEntered}, session=sess)
-    return userID
+        user = readonly.find_one({"username": usernameEntered}, session=sess)
+        userID = user["_id"]
+    return dumps({"_id": userID})
 
 #Update
 def update_bounty_state(client = None, bounty_id = None, new_state = None):
@@ -62,13 +61,20 @@ def update_bounty(client = None, bounty_id = None, new_data = {}):
         collection = client.rebound.bounty
         collection.update_one({"_id": ObjectId(bounty_id)}, {"$set": {"name" : new_data["name"], "state": new_state}}, session=sess)
 
-new_data = {"name" : request.form["name"], "price" : request.form["price"], "state" : request.form["state"], "description" : desc = request.form["description"]}
+#new_data = {"name" : request.form["name"], "price" : request.form["price"], "state" : request.form["state"], "description" : desc = request.form["description"]}
 
 #Delete
-def delete_bounty(client = None, bounty_id = None):
+def delete_bounty(client = None, bounty_id = None, user_id = None):
+    success = False
+    #TODO: Check if the user actually owns this bounty!!!
     with client.start_session(causal_consistency=True) as sess:
         collection = client.rebound.bounty
+        entry = collection.find_one({"_id": ObjectId(bounty_id)}, session=sess)
+        #if entry["user_id"] == user_id:
+        #   ... not implemented cause entries don't currenly store user ids, whoops!
         collection.delete_one({"_id": ObjectId(bounty_id)}, session=sess)
+        success = True
+    return success
 
 #inventory.update_one({"sku": "abc123", "qty": {"$gte": 100}},{"$inc": {"qty": -100}}, session=session)
 
