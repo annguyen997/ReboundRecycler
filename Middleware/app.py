@@ -1,8 +1,12 @@
 import os
 from backend.mongo import *
 from flask import Flask
+from flask_cors import CORS, cross_origin
 
 app = Flask(__name__)
+#cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
+
+CORS(app)
 client = createMongoClient()
 
 @app.route('/')
@@ -20,6 +24,7 @@ def login():
         return "bad method 405"
 
 @app.route('/api/bounties/map', methods = ['GET'])
+@cross_origin()
 def allBountiesCoords():
     """return bounty name, price, and coordinates"""
     print("get all bounty coordinates")

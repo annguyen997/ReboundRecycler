@@ -5,7 +5,7 @@ import pymongo
 from pymongo import ReadPreference
 
 def createMongoClient():
-    client = pymongo.MongoClient("mongodb+srv://root:<PASSWORD>@rebound-hjaic.gcp.mongodb.net/test?retryWrites=true&w=majority")
+    client = pymongo.MongoClient("mongodb+srv://root:toor@rebound-hjaic.gcp.mongodb.net/test?retryWrites=true&w=majority")
     return client
 #db = client.test
 
