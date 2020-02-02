@@ -32,7 +32,7 @@ def read_bounty(bountyID, client = None):
         collection = client.rebound.bounty
         readonly = collection.with_options(
             read_preference=ReadPreference.SECONDARY)
-        bountyEntry = readonly.find_one({"_id": bountyID}, session=sess)
+        bountyEntry = readonly.find_one({"_id": ObjectId(bountyID)}, session=sess)
     return dumps(bountyEntry)
 
 def read_bounties(client = None):
