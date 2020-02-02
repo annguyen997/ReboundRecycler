@@ -1,7 +1,7 @@
 import os
 import json
-from backend.mongo import *
-from flask import Flask
+from backend.mongo import * 
+from flask import Flask, request
 from flask_cors import CORS, cross_origin
 
 """Configuration"""
@@ -58,27 +58,16 @@ def allBountiesCoordinates():
 @app.route('/api/bounty/add')
 def createBounty(userID):
     if request.method == 'POST':
-        new_bounty = {"name" : request.form["name"], "user_id" : userID, "location": {"lng": , "lat": }"price" : request.form["price"], "state" : "untaken", "desc" : request.form["description"], "img" : None}
+        new_bounty = {"name" : request.form["name"], "user_id" : userID, "location": {"lng": 0.0, "lat": 0.0}"price" : request.form["price"], "state" : "untaken", "desc" : request.form["description"], "img" : None}
         create_bounty(client, new_bounty)
 
 @app.route('/api/bounty/add')
 def createJob(userID, bountyID):
     if request.method == 'POST':
-        new_job = {"user_id" : userID, "bounty_id" : bountyID, "start_time" : , "end_time" : , "state" : ""}
+        new_job = {"user_id" : userID, "bounty_id" : bountyID, "state" : ""}
         create_job(client, new_job)
 
-test_bounty = {
-    "name": "Trash in Rosslyn",
-    "desc": "Can someone dispose of the Raytheon building? Thanks...",
-    "user_id": None,
-    "location":{
-        "lng":0.0,
-        "lat":0.0
-    },
-    "price": 99999.99,
-    "state": "untaken",
-    "img": None
-}
+
 @app.route('/api/bounty/<bounty_id>', methods = ['GET', 'POST', 'DELETE'])
 def bountyCRUD(bounty_id):
     if request.method == 'GET':
