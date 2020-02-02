@@ -55,18 +55,22 @@ def allBountiesCoordinates():
     #data = map(lambda entry : {"_id": entry['_id'], "name" : entry['name'], "location" : entry['location']}, data)
     return "{}".format(data)
 
+@app.route("/user", methods=["POST"])
+def add_user():
+    new_user = {"username" request.form['username']
+    pwd = request.form['pwd']
+    create_user(client, username, pwd)
+
 @app.route('/api/bounty/add')
 def createBounty(userID):
     if request.method == 'POST':
         new_bounty = {"name" : request.form["name"], "user_id" : userID, "location": {"lng": 0.0, "lat": 0.0}"price" : request.form["price"], "state" : "untaken", "desc" : request.form["description"], "img" : None}
         create_bounty(client, new_bounty)
 
-@app.route('/api/bounty/add')
 def createJob(userID, bountyID):
     if request.method == 'POST':
         new_job = {"user_id" : userID, "bounty_id" : bountyID, "state" : ""}
         create_job(client, new_job)
-
 
 @app.route('/api/bounty/<bounty_id>', methods = ['GET', 'POST', 'DELETE'])
 def bountyCRUD(bounty_id):
