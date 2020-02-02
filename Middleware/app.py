@@ -57,9 +57,8 @@ def allBountiesCoordinates():
 
 @app.route("/user", methods=["POST"])
 def add_user():
-    new_user = {"username" request.form['username']
-    pwd = request.form['pwd']
-    create_user(client, username, pwd)
+    new_user = {"username" : request.form['username'], "pwd" : request.form['pwd'], bio : "", picture : None}
+    create_user(client, new_user)
 
 @app.route('/api/bounty/add')
 def createBounty(userID):

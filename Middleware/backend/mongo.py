@@ -15,6 +15,11 @@ def dbAction(action = None, args = None):
         session.with_transaction(lambda s: action(s, args))
 
 #Create
+def create_user(client = None, user = {}):
+    with client.start_session(causal_consistency=True) as sess:
+        collection = client.rebound.user
+        collection.insert_one(user, session=sess)
+
 def create_bounty(client = None, bounty = {}):
     with client.start_session(causal_consistency=True) as sess:
         collection = client.rebound.bounty
