@@ -86,8 +86,9 @@ def bountyCRUD(bounty_id):
         # changes
 
         #DO NOT CHANGE _id, user_id, location
-        new_data = {"name" : request.form["name"], "price" : request.form["price"], "state" : request.form["state"], "desc" : request.form["description"]} #A multidict containing POST data
-        update_bounty(client, bounty_id, new_data)
+        #new_data = {"name" : request.form["name"], "price" : request.form["price"], "state" : request.form["state"], "desc" : request.form["description"]} #A multidict containing POST data
+        body = request.form
+        update_bounty_state(client, bounty_id, body["state"])
 
     if request.method == 'DELETE':
         """delete bounty with ID <bounty_id>, given that <bounty_id> belongs to <user_id>"""
