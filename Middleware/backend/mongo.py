@@ -14,13 +14,13 @@ def dbAction(action = None, args = None):
         session.with_transaction(
                 lambda s: action(s, args))
 
-#C
+#Create
 def create_bounty(client = None, bounty = None):
     with client.start_session(causal_consistency=True) as sess:
         collection = client.rebound.bounty
         collection.insert_one(bounty, session=sess)
 
-#R
+#Read
 def read_bounties(client = None):
     data = []
     with client.start_session(causal_consistency=True) as sess:
@@ -34,13 +34,22 @@ def read_bounties(client = None):
             #    entry["_id"], entry["name"], entry["price"], entry["state"], entry["desc"]))
     return data
 
-#U
+def read_userIDFromUsername(usernameEntered, client = None): 
+    userID = "" 
+    with client.start_session(causal_consistency=True) as sess:
+        collection = client.rebound.users
+        readonly = collection.with_options(
+            read_preference=ReadPreference.SECONDARY)
+        userID = readonly.find({"username": usernameEntered}, session=sess)
+    return userID
+
+#Update
 def update_bounty_state(client = None, bounty_id = None, new_state = None):
     with client.start_session(causal_consistency=True) as sess:
         collection = client.rebound.bounty
         collection.update_one({"_id": ObjectId(bounty_id)}, {"$set": {"state": new_state}}, session=sess)
 
-#D
+#Delete
 def delete_bounty(client = None, bounty_id = None):
     with client.start_session(causal_consistency=True) as sess:
         collection = client.rebound.bounty
