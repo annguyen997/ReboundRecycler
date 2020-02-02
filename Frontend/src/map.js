@@ -96,7 +96,7 @@ class Map extends Component{
             <h3><b>${this.state.viewCard.price}</b></h3>
             <p><i>{this.state.viewCard.state}</i></p>
             <p>{this.state.viewCard.desc}</p>
-            <button>Accept</button>
+            <button onClick={() => console.log("test")}>Accept</button>
           </div>
         }
       </div>
