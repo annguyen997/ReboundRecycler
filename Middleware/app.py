@@ -55,6 +55,24 @@ def allBountiesCoordinates():
     #data = map(lambda entry : {"_id": entry['_id'], "name" : entry['name'], "location" : entry['location']}, data)
     return "{}".format(data)
 
+@app.route('/api/bounty/add')
+def createBounty(userID):
+    if request.method == 'POST':
+        new_bounty = {"name" : request.form["name"], "price" : request.form["price"], "state" : "untaken", "desc" : request.form["description"]}
+        createBounty(client, )
+
+test_bounty = {
+    "name": "Trash in Rosslyn",
+    "desc": "Can someone dispose of the Raytheon building? Thanks...",
+    "user_id": None,
+    "location":{
+        "lng":0.0,
+        "lat":0.0
+    },
+    "price": 99999.99,
+    "state": "untaken",
+    "img": None
+}
 @app.route('/api/bounty/<bounty_id>', methods = ['GET', 'POST', 'DELETE'])
 def bountyCRUD(bounty_id):
     if request.method == 'GET':
@@ -84,7 +102,7 @@ def bountyCRUD(bounty_id):
     else:
         return "Unimplemented. There is a problem understanding the request."
         # POST Error 405 Method Not Allowed
-        
+
 if __name__ == "__main__":
     app.run(debug=True,host='0.0.0.0',port=int(os.environ.get('PORT', 8080)))
     #app.run(debug=True,host='localhost',port=int(os.environ.get('PORT', 8080)))
