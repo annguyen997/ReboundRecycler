@@ -15,15 +15,15 @@ def dbAction(action = None, args = None):
         session.with_transaction(lambda s: action(s, args))
 
 #Create
-def create_bounty(client = None, bounty = None, userID = None, data = {}):
+def create_bounty(client = None, bounty = {}):
     with client.start_session(causal_consistency=True) as sess:
         collection = client.rebound.bounty
         collection.insert_one(bounty, session=sess)
 
-def create_job(client = None, job = None):
+def create_job(client = None, job = {}):
     with client.start_session(causal_consistency=True) as sess:
         collection = client.rebound.job
-        collection.insert_one()
+        collection.insert_one(job, session=sess)
 
 #Read
 def read_bounty(bountyID, client = None):

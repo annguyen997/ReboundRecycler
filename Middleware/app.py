@@ -58,8 +58,14 @@ def allBountiesCoordinates():
 @app.route('/api/bounty/add')
 def createBounty(userID):
     if request.method == 'POST':
-        new_bounty = {"name" : request.form["name"], "price" : request.form["price"], "state" : "untaken", "desc" : request.form["description"]}
-        createBounty(client, )
+        new_bounty = {"name" : request.form["name"], "user_id" : userID, "location": {"lng": , "lat": }"price" : request.form["price"], "state" : "untaken", "desc" : request.form["description"], "img" : None}
+        create_bounty(client, new_bounty)
+
+@app.route('/api/bounty/add')
+def createJob(userID, bountyID):
+    if request.method == 'POST':
+        new_job = {"user_id" : userID, "bounty_id" : bountyID, "start_time" : , "end_time" : , "state" : ""}
+        create_job(client, new_job)
 
 test_bounty = {
     "name": "Trash in Rosslyn",
