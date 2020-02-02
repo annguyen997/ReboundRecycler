@@ -115,10 +115,19 @@ body{
   border-radius: 50px;
 }
 
-#menu_center>menu {
+#menu_center{
+  text-align: center;
+
+  border: 1px solid transparent;
+  border-radius: 50px;
   width: 120px;
   height: auto;
-  margin: -20px 0;
+  margin: -12px 0;
+}
+
+#menu_center>img{
+  width: 100%;
+  height: auto;
 }
 
 #overlay{
@@ -145,15 +154,6 @@ body{
 
   background: white;
   box-shadow: 1px 1px 5px darkslategrey;
-}
-
-#menu_center{
-  width: 16%;
-  margin: 5px 1%;
-  text-align: center;
-
-  border: 1px solid transparent;
-  border-radius: 50px;
 }
 
 #menu_item{
