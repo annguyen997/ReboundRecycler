@@ -52,10 +52,10 @@ def read_userIDFromUsername(usernameEntered, client = None):
     return userID
 
 #Update
-def update_bounty_state(client = None, bounty_id = None, new_state = None):
+""" def update_bounty_state(client = None, bounty_id = None, new_state = None):
     with client.start_session(causal_consistency=True) as sess:
         collection = client.rebound.bounty
-        collection.update_one({"_id": ObjectId(bounty_id)}, {"$set": {"state": new_state}}, session=sess)
+        collection.update_one({"_id": ObjectId(bounty_id)}, {"$set": {"state": new_state}}, session=sess) """
 
 def update_bounty(client = None, bounty_id = None, new_data = {}):
     with client.start_session(causal_consistency=True) as sess:
