@@ -12,6 +12,7 @@ class Map extends Component{
 
     this.init_map = this.init_map.bind(this)
     this.render_bounty = this.render_bounty.bind(this)
+    this.accept_bounty = this.accept_bounty.bind(this)
     const options: LoaderOptions = {/* todo */};
     this.loader = new Loader("AIzaSyA8VNUu-pbN6gSNsc1ayzYEaL5xjIshEOI", options);
 
@@ -65,6 +66,35 @@ class Map extends Component{
     )
   }
 
+  accept_bounty = _id => {
+    let id = _id["$oid"]
+    console.log(id)
+    fetch(`https://test-b4gvhsdddq-uc.a.run.app/api/bounty/${id}`, {
+        method: 'post',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({"state":"taken"})
+    })
+    .then(res => res.json())
+    .then(res => this.setState({viewCard: res}))
+    .then(res => {
+      fetch(`https://test-b4gvhsdddq-uc.a.run.app/api/bounty/${id}`, {
+        method: 'GET',
+        headers: {
+          "Accept": "application/json",
+        }
+      })
+      .then(res => res.json())
+      .then(res => this.setState({viewCard: res}))
+      //.then(res => console.log(`${res.text()}`))
+      .catch(err => console.log(`Error on getting bounty: ${err}`))
+    })
+    //.then(res => console.log(`${res.text()}`))
+    .catch(err => console.log(`Error on getting bounty: ${err}`))
+    
+  }
+
   render_bounty = bounty => {
     const _bounty = bounty
     return () => {
@@ -96,7 +126,10 @@ class Map extends Component{
             <h3><b>${this.state.viewCard.price}</b></h3>
             <p><i>{this.state.viewCard.state}</i></p>
             <p>{this.state.viewCard.desc}</p>
-            <button onClick={() => console.log("test")}>Accept</button>
+            {this.state.viewCard.state === "untaken" && 
+              <button id="viewCardAcceptEnabled" onClick={() => this.accept_bounty(this.state.viewCard._id)}>Accept</button>}
+            {this.state.viewCard.state === "taken" && 
+              <button id="viewCardAcceptDisabled" onClick={() => this.accept_bounty(this.state.viewCard._id)}>Accept</button>}
           </div>
         }
       </div>
