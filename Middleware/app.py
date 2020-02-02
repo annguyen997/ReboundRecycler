@@ -53,7 +53,7 @@ def allBountiesCoordinates():
 
     #Filter results to return simply get _id, name, location to populate map. 
     #data = map(lambda entry : {"_id": entry['_id'], "name" : entry['name'], "location" : entry['location']}, data)
-    return "{}".format(data) 
+    return "{}".format(data)
 
 @app.route('/api/bounty/<bounty_id>', methods = ['GET', 'POST', 'DELETE'])
 def bountyCRUD(bounty_id):
@@ -84,7 +84,7 @@ def bountyCRUD(bounty_id):
     else:
         return "Unimplemented. There is a problem understanding the request."
         # POST Error 405 Method Not Allowed
-
+        
 if __name__ == "__main__":
     app.run(debug=True,host='0.0.0.0',port=int(os.environ.get('PORT', 8080)))
     #app.run(debug=True,host='localhost',port=int(os.environ.get('PORT', 8080)))

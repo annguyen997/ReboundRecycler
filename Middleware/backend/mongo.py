@@ -20,6 +20,11 @@ def create_bounty(client = None, bounty = None):
         collection = client.rebound.bounty
         collection.insert_one(bounty, session=sess)
 
+def create_job(client = None, job = None):
+    with client.start_session(causal_consistency=True) as sess:
+        collection = client.rebound.job
+        collection.insert_one()
+
 #Read
 def read_bounty(bountyID, client = None):
     bountyEntry = None
