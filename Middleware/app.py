@@ -63,7 +63,7 @@ def add_user():
 @app.route('/api/bounty/add')
 def createBounty(userID):
     if request.method == 'POST':
-        new_bounty = {"name" : request.form["name"], "user_id" : userID, "location": {"lng": 0.0, "lat": 0.0}"price" : request.form["price"], "state" : "untaken", "desc" : request.form["description"], "img" : None}
+        new_bounty = {"name" : request.form["name"], "user_id" : userID, "location": {"lng": 0.0, "lat": 0.0}, "price" : request.form["price"], "state" : "untaken", "desc" : request.form["description"], "img" : None}
         create_bounty(client, new_bounty)
 
 def createJob(userID, bountyID):
