@@ -15,10 +15,20 @@ def dbAction(action = None, args = None):
         session.with_transaction(lambda s: action(s, args))
 
 #Create
-def create_bounty(client = None, bounty = None):
+def create_user(client = None, user = {}):
+    with client.start_session(causal_consistency=True) as sess:
+        collection = client.rebound.user
+        collection.insert_one(user, session=sess)
+
+def create_bounty(client = None, bounty = {}):
     with client.start_session(causal_consistency=True) as sess:
         collection = client.rebound.bounty
         collection.insert_one(bounty, session=sess)
+
+def create_job(client = None, job = {}):
+    with client.start_session(causal_consistency=True) as sess:
+        collection = client.rebound.job
+        collection.insert_one(job, session=sess)
 
 #Read
 def read_bounty(bountyID, client = None):
@@ -27,7 +37,7 @@ def read_bounty(bountyID, client = None):
         collection = client.rebound.bounty
         readonly = collection.with_options(
             read_preference=ReadPreference.SECONDARY)
-        bountyEntry = readonly.find_one({"_id": bountyID}, session=sess)
+        bountyEntry = readonly.find_one({"_id": ObjectId(bountyID)}, session=sess)
     return dumps(bountyEntry)
 
 def read_bounties(client = None):

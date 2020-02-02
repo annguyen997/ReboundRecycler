@@ -1,7 +1,7 @@
 import os
 import json
-from backend.mongo import *
-from flask import Flask
+from backend.mongo import * 
+from flask import Flask, request
 from flask_cors import CORS, cross_origin
 
 """Configuration"""
@@ -53,7 +53,23 @@ def allBountiesCoordinates():
 
     #Filter results to return simply get _id, name, location to populate map. 
     #data = map(lambda entry : {"_id": entry['_id'], "name" : entry['name'], "location" : entry['location']}, data)
-    return "{}".format(data) 
+    return "{}".format(data)
+
+@app.route("/user", methods=["POST"])
+def add_user():
+    new_user = {"username" : request.form['username'], "pwd" : request.form['pwd'], "bio" : "", "picture" : None}
+    create_user(client, new_user)
+
+@app.route('/api/bounty/add')
+def createBounty(userID):
+    if request.method == 'POST':
+        new_bounty = {"name" : request.form["name"], "user_id" : userID, "location": {"lng": 0.0, "lat": 0.0}, "price" : request.form["price"], "state" : "untaken", "desc" : request.form["description"], "img" : None}
+        create_bounty(client, new_bounty)
+
+def createJob(userID, bountyID):
+    if request.method == 'POST':
+        new_job = {"user_id" : userID, "bounty_id" : bountyID, "state" : ""}
+        create_job(client, new_job)
 
 @app.route('/api/bounty/<bounty_id>', methods = ['GET', 'POST', 'DELETE'])
 def bountyCRUD(bounty_id):
