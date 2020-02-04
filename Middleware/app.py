@@ -1,15 +1,17 @@
 import os
 import json
+from environment import *
 from backend.mongo import * 
 from flask import Flask, request
 from flask_cors import CORS, cross_origin
 
 """Configuration"""
-app = Flask(__name__)
-#cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
+env = environment("app.env")
 
+app = Flask(__name__)
 CORS(app)
-client = createMongoClient()
+
+client = createMongoClient(env.get_env("url").format(env.get_env("password")))
 
 """MAIN"""
 @app.route('/', methods=['POST', 'GET'])
@@ -87,8 +89,9 @@ def bountyCRUD(bounty_id):
 
         #DO NOT CHANGE _id, user_id, location
         #new_data = {"name" : request.form["name"], "price" : request.form["price"], "state" : request.form["state"], "desc" : request.form["description"]} #A multidict containing POST data
-        body = request.form
-        update_bounty_state(client, bounty_id, body["state"])
+        #body = request.form
+        update_bounty_state(client, bounty_id, "taken")
+        return "true"
 
     if request.method == 'DELETE':
         """delete bounty with ID <bounty_id>, given that <bounty_id> belongs to <user_id>"""
