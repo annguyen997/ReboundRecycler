@@ -15,8 +15,8 @@ class Map extends Component{
     this.init_map = this.init_map.bind(this)
     this.render_bounty = this.render_bounty.bind(this)
     this.accept_bounty = this.accept_bounty.bind(this)
-    const options: LoaderOptions = {/* todo */};
-    this.loader = new Loader("AIzaSyA8VNUu-pbN6gSNsc1ayzYEaL5xjIshEOI", options);
+    const options: LoaderOptions = {/* todo */}
+	this.loader = new Loader(`${process.env.REACT_APP_MAP_API_KEY}`, options)
 
   }
 
