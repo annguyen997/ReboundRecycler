@@ -6,7 +6,7 @@ import pymongo
 from pymongo import ReadPreference
 
 def createMongoClient(url):
-    client = pymongo.MongoClient("mongodb+srv://root:toor@rebound-hjaic.gcp.mongodb.net/test?retryWrites=true&w=majority")
+    client = pymongo.MongoClient(url)
     return client
 #db = client.test
 
