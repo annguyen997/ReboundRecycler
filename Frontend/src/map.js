@@ -1,7 +1,7 @@
-import React, {Component} from 'react';
-import {Loader, LoaderOptions} from 'google-maps';
+import React, {Component} from 'react'
+import {Loader, LoaderOptions} from 'google-maps'
+import MapCard from './map-card'
 import MapIcon from './icon.svg'
-import AddBountyLogo from "./Logo1+AddBounty_.svg";
 //import './App.css';
 
 class Map extends Component{
@@ -21,7 +21,7 @@ class Map extends Component{
   }
 
   componentDidMount() {
-    this.loader.load().then(google => {
+    let mapPromise = this.loader.load().then(google => {
       this.setState({
         google: google,
         map : new google.maps.Map(document.getElementById('map'), {
@@ -36,12 +36,11 @@ class Map extends Component{
       })
     })
 
-    fetch("https://test-b4gvhsdddq-uc.a.run.app/api/bounties/map", {
+    let dataPromise = fetch("https://test-b4gvhsdddq-uc.a.run.app/api/bounties/map", {
       method: 'GET',
-      //mode: 'no-cors',
       headers: {
         "Accept": "application/json",
-        //"Content-Type": "application/json"
+        "Content-Type": "application/json"
       }
     })
     .then(res => res.json())
@@ -50,11 +49,13 @@ class Map extends Component{
           listings: json
       });
     })
-    .then(json => this.init_map())
     .catch(err => {
       console.log('caught it!',err);
     })
     
+
+	Promise.all([mapPromise, dataPromise])
+    .then(json => this.init_map())
   } 
 
   init_map = () => {
@@ -103,10 +104,8 @@ class Map extends Component{
       })
       .then(res => res.json())
       .then(res => this.setState({viewCard: res}))
-      //.then(res => console.log(`${res.text()}`))
       .catch(err => console.log(`Error on getting bounty: ${err}`))
     })
-    //.then(res => console.log(`${res.text()}`))
     .catch(err => console.log(`Error on getting bounty: ${err}`))
     
   }
@@ -114,39 +113,25 @@ class Map extends Component{
   render_bounty = bounty => {
     const _bounty = bounty
     return () => {
-      let _id = _bounty._id['$oid']
-      console.log(`bounty id: ${_id}`)
-      fetch(`https://test-b4gvhsdddq-uc.a.run.app/api/bounty/${_id}`, {
-        method: 'GET',
-        headers: {
-          "Accept": "application/json",
-        }
+      this.setState({
+        renderViewCard: false
       })
-      .then(res => res.json())
-      .then(res => this.setState({viewCard: res}))
-      //.then(res => console.log(`${res.text()}`))
-      .catch(err => console.log(`Error on getting bounty: ${err}`))
+      
+      let _id = _bounty._id['$oid']
+
+      this.setState({
+        renderViewCard: true,
+        cardUrl: `https://test-b4gvhsdddq-uc.a.run.app/api/bounty/${_id}`
+      })
     }
   }
 
   render(){
     return (
       <div id="viewContainer">
-      	<div id="map"> 
-          {/*this.map()*/}
-        </div>
-        {this.state.viewCard !== undefined &&
-          <div id="viewCard">
-            <div id="viewCardImage" style={{backgroundImage: `url('data:image/jpeg;base64,${this.state.viewCard.img}')`}}></div>
-            <h2>{this.state.viewCard.name}</h2>
-            <h3><b>${this.state.viewCard.price}</b></h3>
-            <p><i>{this.state.viewCard.state}</i></p>
-            <p>{this.state.viewCard.desc}</p>
-            {this.state.viewCard.state === "untaken" && 
-              <button id="viewCardAcceptEnabled" onClick={() => this.accept_bounty(this.state.viewCard._id)}>Accept</button>}
-            {this.state.viewCard.state === "taken" && 
-              <button id="viewCardAcceptDisabled" onClick={() => this.accept_bounty(this.state.viewCard._id)}>Accept</button>}
-          </div>
+      	<div id="map"></div>
+        {this.state.renderViewCard === true &&
+			    <MapCard url={this.state.cardUrl} />
         }
       </div>
     )
