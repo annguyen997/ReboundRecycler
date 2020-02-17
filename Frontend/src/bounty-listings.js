@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import Loading from './loader';
+import Error from './error';
 import fetch from 'node-fetch';
 
 class Listings extends Component {
@@ -14,7 +16,7 @@ class Listings extends Component {
 
 	componentDidMount() {
 		this.setState({renderState: 1})
-		fetch("https://test-b4gvhsdddq-uc.a.run.app/api/bounties/map", {
+		fetch("https://test-b4gvhsdddq-uc.a.run.app/api/bounties/listings", {
 			method: 'GET',
 			//mode: 'no-cors',
 			headers: {
@@ -31,7 +33,9 @@ class Listings extends Component {
 		})
 		.then(x => console.log(this.state.listings))
 		.catch(err => {
-			this.setState({renderState: 0})
+			this.setState({
+					renderState: 0
+			})
 			console.log('caught it!',err);
 		})
 		
@@ -42,8 +46,18 @@ class Listings extends Component {
 		data.forEach((entry, key) => {
 			let element = (
 				<div key={key} id="card">
-					<h2>{entry.name}</h2>
-					<p><i>lng: </i>{entry.location.lng}  <i>lat: </i>{entry.location.lat}</p>
+					<div id="listingCardImage" style={{backgroundImage: `/*linear-gradient(to left, white, transparent),*/ url('data:image/jpeg;base64,${entry.img}')`}}></div>
+					<div id="listingText">
+						<h2>{entry.name}</h2>
+						<p>{entry.price} &bull; {entry.state}</p>
+						<p>{entry.desc}</p>
+					</div>
+					<div id="listingButton">
+						{entry.state === "untaken" && 
+							<button id="listingCardAccept" class="ButtonEnabled">Accept</button>}
+						{entry.state === "taken" && 
+							<button id="listingCardAccept" class="ButtonDisabled">Accept</button>}
+					</div>
 				</div>
 			)
 			elements.push(element)
@@ -55,13 +69,13 @@ class Listings extends Component {
 		return (
 			<div id="listings">
 				{this.state.renderState === 0 && 
-					<p>Error</p>
+					<Error/>
 				}
 				{this.state.renderState === 1 && 
-					<p>Loading</p>
+					<Loading/>
 				}
 				{this.state.renderState === 2 && 
-					<div>{this.state.listings}</div>
+					<div id="listingsFrame">{this.state.listings}</div>
 				}
 	  		</div>
 		);
