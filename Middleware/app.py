@@ -13,6 +13,9 @@ CORS(app)
 
 client = createMongoClient(env.get_env("url").format(env.get_env("password")))
 
+sessions = {
+}
+
 """MAIN"""
 @app.route('/', methods=['POST', 'GET'])
 def index():
@@ -36,13 +39,29 @@ def index():
     else:
         return None
 
-@app.route('/api/auth', methods = ['POST'])
+
+###Special Getters###
+@app.route('/api/auth', methods = ['GET', 'DELETE'])
+@cross_origin()
 def login():
-    """Find a user_id given a supplied username"""
-    if request.method == 'POST':
-        username = request.form['username']
-        userID = read_userIDFromUsername(username, client)
-        return userID
+    """Find and authenticate the user, give the user a bearer token"""
+    if request.method == 'GET':
+        session = "None"
+        if request.authorization:
+            username = request.authorization['username']
+            password = request.authorization['password']
+            (userID, session) = authenticate(client, username, password)
+            if session is not None:
+                sessions[session] = userID
+        print(sessions)
+        return json.dumps({"token": str(session)})
+    """Delete the sesion"""
+    if request.method == 'DELETE':
+        if request.authorization and 'X-AUTH' in request.authorization:
+            session = request.authorization['X-AUTH']
+            del sessions[session]
+            return json.dumps({"message":"session deleted"})
+        return json.dumps({"message":"invalid request"})
     else:
         return "Bad method 405"
 
@@ -51,16 +70,20 @@ def login():
 def allBountiesCoordinates():
     """return bounty name, price, and coordinates"""
     print("get all bounty coordinates")
-    data = read_bounties(client)
+    data = read_bounties_map(client)
 
     #Filter results to return simply get _id, name, location to populate map. 
     #data = map(lambda entry : {"_id": entry['_id'], "name" : entry['name'], "location" : entry['location']}, data)
     return "{}".format(data)
 
-@app.route("/user", methods=["POST"])
-def add_user():
-    new_user = {"username" : request.form['username'], "pwd" : request.form['pwd'], "bio" : "", "picture" : None}
-    create_user(client, new_user)
+@app.route('/api/bounties/listings', methods = ['GET'])
+@cross_origin()
+def allBountiesDetails():
+    """return bounty name, description, price, and picture"""
+    print("get all bounty details")
+    data = read_bounties_list(client)
+
+    return "{}".format(data)
 
 @app.route('/api/bounty/add')
 def createBounty(userID):
@@ -68,6 +91,8 @@ def createBounty(userID):
         new_bounty = {"name" : request.form["name"], "user_id" : userID, "location": {"lng": 0.0, "lat": 0.0}, "price" : request.form["price"], "state" : "untaken", "desc" : request.form["description"], "img" : None}
         create_bounty(client, new_bounty)
 
+#CRUDs
+@app.route('/api/jobs', methods=["POST"])
 def createJob(userID, bountyID):
     if request.method == 'POST':
         new_job = {"user_id" : userID, "bounty_id" : bountyID, "state" : ""}
@@ -105,9 +130,28 @@ def bountyCRUD(bounty_id):
         return "Unimplemented. There is a problem understanding the request."
         # POST Error 405 Method Not Allowed
 
+@app.route('/api/account', methods = ['GET', 'POST'])
+@cross_origin()
+def getUser():
+    """Find a user_id given a supplied username"""
+    if request.method == 'GET':
+        print(request.headers)
+        session = request.headers['X-AUTH']
+        if session is None:
+            return json.dumps({})
+        print(session)
+        uid = sessions[session]
+        user = read_userFromSession(uid, client)
+        return user
+    elif request.method == "POST":
+        new_user = {"username" : request.form['username'], "pwd" : request.form['pwd'], "bio" : "", "picture" : None}
+        create_user(client, new_user)
+    else:
+        return "Bad method 405"
+
+
 if __name__ == "__main__":
     app.run(debug=True,host='0.0.0.0',port=int(os.environ.get('PORT', 8080)))
-    #app.run(debug=True,host='localhost',port=int(os.environ.get('PORT', 8080)))
 
 
 #OLD MAIN FOR REFERENCE PURPOSES
