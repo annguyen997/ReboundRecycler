@@ -25,18 +25,71 @@ body{
 
 #listings {
   position: relative;
-  float: right;
 
-  margin: 0;
+  margin: 12vh 0 0;
 
-  width: 50%;
+  width: 100%;
+  height: 88vh;
+}
+
+#listingsFrame{
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;  
+		
   height: 100%;
+  width: 85%;
+
+  margin: auto;
 }
 
 #card {
+  display: flex;
+  flex-direction: column;
+
+  width: 250px;
+  height: 400px;
+
+  margin: 5px 0.5%;
+
   border: 3px solid black;
-  border-radius: 5px;
-  border-width: 3px 1px 1px 3px;
+  border-radius: 2px;
+  border-width: 1px;
+}
+
+#listingCardImage{
+  height: 50%;
+
+  border: 0px solid transparent;
+  border-radius: 2px 1px 1px 2px;
+  background-size: cover;
+}
+
+#listingText{
+  float: right;
+  width: 100%;
+  height: 45%;
+  margin: 2.5% auto;
+}
+
+#listingText>h2, #listingText>p{
+  margin: 3px 10px;
+}
+
+#listingButton{
+  height: 10%
+}
+
+#listingCardAccept{
+  width: 100%;
+  height: 100%;
+  border: 0px solid transparent;
+  font-size: 1.1rem;
+}
+
+#listingCardAccept.ButtonEnabled{
+  box-shadow: 0px 0px 25px 0px mediumspringgreen;
 }
 
 #viewContainer{
@@ -56,10 +109,10 @@ body{
 
 #viewCard {
   position: absolute;
-  top: calc(100% - 275px);
-  left: calc(100% - 475px);
-  width: 450px;
-  height: 250px;
+  top: calc(100% - 475px);
+  left: calc(100% - 350px);
+  width: 325px;
+  height: 450px;
 
   background: white;
 
@@ -69,12 +122,30 @@ body{
   box-shadow: 1px 1px 5px #000a;
 }
 
-#viewCardImage{
-  width: 200px;
+#innerViewCard{
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+#innerViewCard>h2, #innerViewCard>h3, #innerViewCard>p{
+  margin: 15px 10px 0;
+}
+/*
+#innerViewCard>h2{
   height: 250px;
+}
+
+#innerViewCard>p{
+  height: 90px;
+}
+*/
+#viewCardImage{
+  width: 325px;
+  height: 200px;
   float: left;
   border: 0px solid black;
-  border-radius: 25px 0 0 25px;
+  border-radius: 25px 25px 0 0;
   background-size: cover;
 }
 
@@ -97,6 +168,7 @@ body{
 
   color: mediumseagreen;
 }
+
 #viewCard>p {
   text-align: left;
   float: right;
@@ -105,28 +177,26 @@ body{
   padding: 0 0 0 25px;
 }
 
-#viewCardAcceptEnabled {
+#viewCardAccept {
+  position: absolute;
+  top: 405px;
+  
   width: 150px;
-  float: right;
-  margin: 5px 50px;
+  margin: 5px calc(50% - 75px);
   padding: 5px 5px 5px 5px;
   text-align: center;
-  color: white;
-  background: mediumseagreen;
   border: 1px solid transparent;
   border-radius: 50px;
 }
 
-#viewCardAcceptDisabled {
-  width: 150px;
-  float: right;
-  margin: 5px 50px;
-  padding: 5px 5px 5px 5px;
-  text-align: center;
+.ButtonEnabled {
+  color: white;
+  background: mediumseagreen;
+}
+
+.ButtonDisabled {
   color: white;
   background: lightgray;
-  border: 1px solid transparent;
-  border-radius: 50px;
 }
 
 #menu_center{

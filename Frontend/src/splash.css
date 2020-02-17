@@ -1,0 +1,38 @@
+#splashContainer{
+	display: flex;
+	align-items: center;
+	justify-content: center;
+
+	width: 100%;
+	height: 100%;
+}
+
+#loadingCircle{
+	width: 1in;
+	height: 1in;
+	background-image: radial-gradient(transparent 45%, skyblue 47% 52%, transparent 55%);
+}
+
+#errorSplash:before{
+	opacity: 0;
+}
+
+#errorSplash{
+	opacity: 1;
+	width: 3in;
+	height: 1in;
+	/*background-image: radial-gradient(transparent 45%, skyblue 47% 52%, transparent 55%);*/
+	animation-duration: 1s;
+}
+
+#errorSplash>h1{
+	text-align: center;
+	color: red;
+	font-size: 0.5in;
+	margin: 0;
+}
+
+#errorSplash>p{
+	text-align: center;
+	color: red;
+}
