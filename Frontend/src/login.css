@@ -1,0 +1,49 @@
+#loginCard{
+		position: absolute;
+		top: 40vh;
+		left: 30vw;
+
+		display: flex;
+		flex-direction: column;
+
+		width: 40vw;
+		height: 30vh;
+
+		background: mintcream;
+
+		border: 0px solid black;
+		border-radius: 50px;
+
+		box-shadow: 3px 3px 4px 1px black;
+}
+
+#usernameField{
+	height: 40%;
+	
+	padding: 5px 20px;
+
+	font-size: 2rem;
+	
+	border: 1px solid gray;
+	border-radius: 50px 50px 0 0;
+}
+
+#passwordField{
+	height: 40%;
+	
+	padding: 5px 20px;
+
+	font-size: 2rem;
+	
+	border: 1px solid gray;
+}
+
+#loginButton{
+	height: 20%;
+	
+	border: 0px solid transparent;
+	border-radius: 0 0 50px 50px;
+
+	color: white;
+	background: mediumseagreen;
+}
