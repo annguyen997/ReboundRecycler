@@ -16,8 +16,7 @@ class Map extends Component{
     this.render_bounty = this.render_bounty.bind(this)
     this.accept_bounty = this.accept_bounty.bind(this)
     const options: LoaderOptions = {/* todo */}
-	this.loader = new Loader(`${process.env.REACT_APP_MAP_API_KEY}`, options)
-
+	  this.loader = new Loader(`${process.env.REACT_APP_MAP_API_KEY}`, options)
   }
 
   componentDidMount() {
