@@ -12,11 +12,16 @@ class Main extends Component{
 		this.state = {
 			token: cookie.load('token'),
 			account: cookie.load('account'),
-			state: 0
+			picture: "",
+			state: 0,
+			picture_state: 0,
 		}
 
-		this.getAccountData = this.getAccountData.bind(this)
-		this.postAccountData = this.postAccountData.bind(this)
+		this.setLoggedIn = this.setLoggedIn.bind(this)
+		this.setToken = this.setToken.bind(this)
+		this.setAccount = this.setAccount.bind(this)
+		this.getAccountPicture = this.getAccountPicture.bind(this)
+		this.postAccountName = this.postAccountName.bind(this)
 		this.editField = this.editField.bind(this)
 	}
 
@@ -33,24 +38,65 @@ class Main extends Component{
 		}
 	}
 
-	getAccountData = childState => {
-		console.log(`account-settings: account setting callback with ${childState.account.name}`)
-		this.setState({
-			account: childState.account,
-			token: childState.token,
-			state: 2,
-		})
-		this.props.setAccount(this.state.account)
+	setLoggedIn = () => {
+		console.log(`account-settings: login callback`)
+		if(this.props.token !== undefined && this.props.account !== undefined){
+			this.setState({
+				state: 2,
+				account: this.props.account //TODO: Make sure this doesn't come back to bite you!
+			})
+			this.getAccountPicture()
+		}
+	}
+
+	setToken = token => {
+		console.log(`account-settings: token setting callback`)
+		this.props.setToken(token)
+	}
+
+	setAccount = account => {
+		console.log(`account-settings: account setting callback`)
+		this.props.setAccount(account)
 	} 	
 
-	postAccountData = data => {
-    	//fetch(`https://test-b4gvhsdddq-uc.a.run.app/api/account`, {
-		fetch(`http://localhost:8080/api/account`, {
+	getAccountPicture = () => {
+		//fetch(`https://test-b4gvhsdddq-uc.a.run.app/api/account`, {
+		fetch(`http://localhost:8080/api/account/picture/${this.state.account._id["$oid"]}`, {
+    		method: 'GET',
+    		headers: {
+				"Accept": "application/json",
+        		"Content-Type": "application/json",
+				"X-AUTH": this.props.token
+      		}
+    	})
+		.then(res => res.text())
+		.then(res => {console.log(`account-settings: got account picture`);return res;})
+		.then(res => {
+			this.setState({
+				picture: res,
+				picture_state: 2,
+			})
+		})
+		.catch(err => {
+			console.log('caught it!',err)
+			this.setState({
+				errorMsg: err.message,
+				//account:  undefined,
+				picture_state: -1,
+				editName: false,
+				editBio: false,
+			})
+		})
+	}
+
+	postAccountName = data => {
+    	//fetch(`https://test-b4gvhsdddq-uc.a.run.app/api/account/name`, {
+		fetch(`http://localhost:8080/api/account/name`, {
     		method: 'POST',
     		headers: {
 				"Accept": "application/json",
         		"Content-Type": "application/json",
-				"X-AUTH": "NONE"
+				"X-AUTH": this.props.token
       		}
     	})
 		.then(res => res.json())
@@ -92,8 +138,8 @@ class Main extends Component{
 		}
 		{this.state.state === 2 &&
 			<div id="accountCard">
-				{/*<div id="accountPicture" style={{backgroundImage: `url('data:image/jpeg;base64,${this.state.account.picture}')`}}>
-				</div>*/}
+				<div id="accountPicture" style={{backgroundImage: `url(${this.state.picture})`}}>
+				</div>
 				<div id="accountDetails">
 					{!this.state.editName &&
 						<div id="accountName">
@@ -107,7 +153,7 @@ class Main extends Component{
 								className="saveField" 
 								onClick={
 									() => {
-										this.postAccountData({"name": this.state.account.name})
+										this.postAccountName({"name": this.state.account.name})
 										this.setState({editName: false})
 									}
 								}
@@ -128,7 +174,7 @@ class Main extends Component{
 			</div>
 		}
 		{this.state.state === 3 && 
-			<Login callback={this.getAccountData}/>
+			<Login account={this.props.account} setAccount={this.setAccount} token={this.props.token} setToken={this.setToken} setLoggedIn={this.setLoggedIn}/>
 		}
 		</div>
 	)
