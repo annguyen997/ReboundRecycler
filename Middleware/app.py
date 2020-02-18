@@ -9,7 +9,7 @@ from flask_cors import CORS, cross_origin
 env = environment("app.env")
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 client = createMongoClient(env.get_env("url").format(env.get_env("password")))
 
@@ -41,9 +41,11 @@ def index():
 
 
 ###Special Getters###
-@app.route('/api/auth', methods = ['GET', 'DELETE'])
+#@app.route('/api/auth', methods = ['GET', 'DELETE'])
+@app.route('/api/auth', methods = ['GET'])
 @cross_origin()
 def login():
+    print("/api/auth hit")
     """Find and authenticate the user, give the user a bearer token"""
     if request.method == 'GET':
         session = "None"
@@ -53,17 +55,33 @@ def login():
             (userID, session) = authenticate(client, username, password)
             if session is not None:
                 sessions[session] = userID
-        print(sessions)
-        return json.dumps({"token": str(session)})
-    """Delete the sesion"""
-    if request.method == 'DELETE':
-        if request.authorization and 'X-AUTH' in request.authorization:
-            session = request.authorization['X-AUTH']
-            del sessions[session]
-            return json.dumps({"message":"session deleted"})
-        return json.dumps({"message":"invalid request"})
+                print("Successfully created session {}".format(session))
+                return json.dumps({"token": str(session)})
+            else:
+                print("Authentication error")
+                return json.dumps({}), 403
+        print("No authentication header")
+        return "", 404
     else:
-        return "Bad method 405"
+        return "Bad method 405", 405
+
+@app.route('/api/auth/logout', methods = ['GET'])
+@cross_origin()
+def logout():    
+    """Delete the sesion - Should be made a part of /api/auth as a DELETE method"""
+    #if request.method == 'DELETE':
+    if request.method == 'GET':
+        session = request.headers.get('X-AUTH')
+        if session != None and session in sessions:
+            del sessions[session]
+            #return json.dumps({"message":"session deleted"})
+            print("Successfully deleted session {}".format(session))
+            return "", 200
+        else:
+            print("Session {} does not exist - cannot delete".format(session))
+            return "", 404
+    else:
+        return "Bad method 405", 405
 
 @app.route('/api/bounties/map', methods = ['GET'])
 @cross_origin()
@@ -136,19 +154,35 @@ def getUser():
     """Find a user_id given a supplied username"""
     if request.method == 'GET':
         print(request.headers)
-        session = request.headers['X-AUTH']
+        session = request.headers.get('X-AUTH')
         if session is None:
             return json.dumps({})
-        print(session)
         uid = sessions[session]
         user = read_userFromSession(uid, client)
+        print(user)
         return user
     elif request.method == "POST":
-        new_user = {"username" : request.form['username'], "pwd" : request.form['pwd'], "bio" : "", "picture" : None}
+        """Make a new user account"""
+        """This will require email verification before writing to the DB"""
+        """pw_hash, pw_salt will be created here"""
+        new_user = {"username" : request.form['username'], "pw" : request.form['pw'], "bio" : "", "picture" : None , "thumbnail": None}
         create_user(client, new_user)
     else:
         return "Bad method 405"
 
+@app.route('/api/account/picture/<u_id>', methods = ['GET'])
+@cross_origin()
+def getUserPicture(u_id):
+    """Find a user picture given a supplied u_id"""
+    image_string = read_pictureFromUID(client, u_id)
+    return image_string
+
+@app.route('/api/account/thumbnail/<u_id>', methods = ['GET'])
+@cross_origin()
+def getUserThumbnail(u_id):
+    """Find a user thumbnail given a supplied u_id"""
+    image_string = read_thumbnailFromUID(client, u_id)
+    return image_string
 
 if __name__ == "__main__":
     app.run(debug=True,host='0.0.0.0',port=int(os.environ.get('PORT', 8080)))

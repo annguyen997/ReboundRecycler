@@ -103,8 +103,38 @@ def read_userFromSession(user_id, client = None):
         readonly = collection.with_options(
             read_preference=ReadPreference.SECONDARY)
         #user = readonly.find_one({"_id": ObjectId(bountyID)}, session=sess)
-        user = readonly.find_one({"_id": ObjectId(user_id)}, {"_id": 0, "pw": 0, "picture": 0}, session=sess)
+        user = readonly.find_one({"_id": ObjectId(user_id)}, {"pw": 0, "picture": 0, "thumbnail": 0}, session=sess)
     return dumps(user)
+
+def read_pictureFromUID(client = None, user_id = None):
+    image_string = ""
+    with client.start_session(causal_consistency=True) as sess:
+        collection = client.rebound.user
+        readonly = collection.with_options(
+            read_preference=ReadPreference.SECONDARY)
+        #user = readonly.find_one({"_id": ObjectId(bountyID)}, session=sess)
+        try:
+            data = readonly.find_one({"_id": ObjectId(user_id)}, {"picture": 1}, session=sess)
+            if data != None:
+                image_string = data["picture"]
+        except:
+            image_string = ""
+    return dumps(image_string)
+
+def read_thumbnailFromUID(client = None, user_id = None):
+    image_string = ""
+    with client.start_session(causal_consistency=True) as sess:
+        collection = client.rebound.user
+        readonly = collection.with_options(
+            read_preference=ReadPreference.SECONDARY)
+        #user = readonly.find_one({"_id": ObjectId(bountyID)}, session=sess)
+        try:
+            data = readonly.find_one({"_id": ObjectId(user_id)}, {"thumbnail": 1}, session=sess)
+            if data != None:
+                image_string = data["thumbnail"]
+        except:
+            image_string = ""
+    return dumps(image_string)
 
 #Update
 def update_bounty_state(client = None, bounty_id = None, new_state = None):
