@@ -38,8 +38,8 @@ class Main extends Component{
 	}
 
 	sendAuthRequest = authString => {
-    	//return fetch(`https://test-b4gvhsdddq-uc.a.run.app/api/auth`, {
-    	return fetch(`http://localhost:8080/api/auth`, {
+    	//return fetch(`http://localhost:8080/api/auth`, {
+    	return fetch(`https://test-b4gvhsdddq-uc.a.run.app/api/auth`, {
     		method: 'GET',
 			headers: {
         		"Content-Type": "application/json",
@@ -71,8 +71,8 @@ class Main extends Component{
 	} 
 
 	getAccountData = token => {
-		//fetch(`https://test-b4gvhsdddq-uc.a.run.app/api/account`, {
-		return fetch(`http://localhost:8080/api/account`, {
+		//return fetch(`http://localhost:8080/api/account`, {
+		fetch(`https://test-b4gvhsdddq-uc.a.run.app/api/account`, {
 			method: 'GET',
 			headers: {
 				"Accept": "application/json",

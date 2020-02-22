@@ -61,7 +61,8 @@ class Main extends Component{
 
 	getAccountPicture = () => {
 		//fetch(`https://test-b4gvhsdddq-uc.a.run.app/api/account`, {
-		fetch(`http://localhost:8080/api/account/picture/${this.state.account._id["$oid"]}`, {
+		//fetch(`http://localhost:8080/api/account/picture/${this.state.account._id["$oid"]}`, {
+		fetch(`https://test-b4gvhsdddq-uc.a.run.app/api/account/picture/${this.state.account._id["%oid"]}`, {
     		method: 'GET',
     		headers: {
 				"Accept": "application/json",
@@ -90,8 +91,8 @@ class Main extends Component{
 	}
 
 	postAccountName = data => {
-    	//fetch(`https://test-b4gvhsdddq-uc.a.run.app/api/account/name`, {
-		fetch(`http://localhost:8080/api/account/name`, {
+		//fetch(`http://localhost:8080/api/account/name`, {
+    	fetch(`https://test-b4gvhsdddq-uc.a.run.app/api/account/name`, {
     		method: 'POST',
     		headers: {
 				"Accept": "application/json",

@@ -27,8 +27,8 @@ class Main extends Component{
 			state: 1
 		})
 		//Temporary solution for CORS issue...
-		//return fetch(`https://test-b4gvhsdddq-uc.a.run.app/api/auth`, {
-    	return fetch(`http://localhost:8080/api/auth/logout`, {
+    	//return fetch(`http://localhost:8080/api/auth/logout`, {
+		return fetch(`https://test-b4gvhsdddq-uc.a.run.app/api/auth/logout`, {
     		method: 'GET',
 			headers: {
         		"Content-Type": "application/json",
