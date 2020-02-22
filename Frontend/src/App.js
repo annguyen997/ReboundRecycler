@@ -56,8 +56,7 @@ class App extends Component{
 	}
 
 	getAccountThumbnail = () => {
-		//fetch(`http://localhost:8080/api/account/thumbnail/${this.state.account._id["$oid"]}`, {
-		fetch(`https://test-b4gvhsdddq-uc.a.run.app/api/account/thumbnail/${this.state.account._id["$oid"]}`, {
+		fetch(`${process.env.REACT_APP_REST_ENDPOINT}/api/account/thumbnail/${this.state.account._id["$oid"]}`, {
     		method: 'GET',
     		headers: {
 				"Accept": "application/json",

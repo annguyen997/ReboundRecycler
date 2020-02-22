@@ -16,7 +16,7 @@ class Listings extends Component {
 
 	componentDidMount() {
 		this.setState({renderState: 1})
-		fetch("https://test-b4gvhsdddq-uc.a.run.app/api/bounties/listings", {
+		fetch(`${process.env.REACT_APP_REST_ENDPOINT}/api/bounties/listings`, {
 			method: 'GET',
 			//mode: 'no-cors',
 			headers: {

@@ -14,7 +14,7 @@ class Map extends Component{
 
     this.init_map = this.init_map.bind(this)
     this.render_bounty = this.render_bounty.bind(this)
-    this.accept_bounty = this.accept_bounty.bind(this)
+    this.accept_bounty = this.accept_bounty.bind(this) 
     const options: LoaderOptions = {/* todo */}
 	  this.loader = new Loader(`${process.env.REACT_APP_MAP_API_KEY}`, options)
   }
@@ -35,7 +35,7 @@ class Map extends Component{
       })
     })
 
-    let dataPromise = fetch("https://test-b4gvhsdddq-uc.a.run.app/api/bounties/map", {
+    let dataPromise = fetch(`${process.env.REACT_APP_REST_ENDPOINT}/api/bounties/map`, {
       method: 'GET',
       headers: {
         "Accept": "application/json",
@@ -85,7 +85,7 @@ class Map extends Component{
   accept_bounty = _id => {
     let id = _id["$oid"]
     console.log(id)
-    fetch(`https://test-b4gvhsdddq-uc.a.run.app/api/bounty/${id}`, {
+    fetch(`${process.env.REACT_APP_REST_ENDPOINT}/api/bounty/${id}`, {
         method: 'post',
         headers: {
           'Content-Type': 'application/json'
@@ -95,7 +95,7 @@ class Map extends Component{
     .then(res => res.json())
     .then(res => this.setState({viewCard: res}))
     .then(res => {
-      fetch(`https://test-b4gvhsdddq-uc.a.run.app/api/bounty/${id}`, {
+      fetch(`${process.env.REACT_APP_REST_ENDPOINT}/api/bounty/${id}`, {
         method: 'GET',
         headers: {
           "Accept": "application/json",
@@ -120,7 +120,7 @@ class Map extends Component{
 
       this.setState({
         renderViewCard: true,
-        cardUrl: `https://test-b4gvhsdddq-uc.a.run.app/api/bounty/${_id}`
+        cardUrl: `${process.env.REACT_APP_REST_ENDPOINT}/api/bounty/${_id}`
       })
     }
   }
