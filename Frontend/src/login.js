@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import Loading from './loader'
 import Error from './error'
+import CreateAccount from './create-account'
 import './login.css'
 
 class Main extends Component{
@@ -32,8 +33,11 @@ class Main extends Component{
 		})
 		let token = await this.sendAuthRequest(`${this.state.username}:${this.state.password}`)
 		if(token !== undefined){
-			if(await this.getAccountData(token) !== undefined)
+			if(await this.getAccountData(token) !== undefined){
 				this.props.setLoggedIn()
+			}else{
+				console.log(`login: Did not set user as logged in, getAccountData returned undefined`)
+			}
 		}
 	}
 
@@ -70,7 +74,7 @@ class Main extends Component{
 	} 
 
 	getAccountData = token => {
-		fetch(`${process.env.REACT_APP_REST_ENDPOINT}/api/account`, {
+		return fetch(`${process.env.REACT_APP_REST_ENDPOINT}/api/account`, {
 			method: 'GET',
 			headers: {
 				"Accept": "application/json",
@@ -125,9 +129,14 @@ class Main extends Component{
 							}}
 							placeholder="secret sauce"
 						/>
-						<button id="loginButton" onClick={this.login}>login</button>
-						{/*<p>{this.state.failMsg}</p>*/}
+						<div id="loginMessage"><p>{this.state.failMsg}</p></div>
+						<div id="submitFields">
+							<button id="createAccountButton" onClick={() => this.setState({state: 3})}>sign up</button>
+							<button id="loginButton" onClick={this.login}>login</button>
+						</div>
 					</div>}
+				{this.state.state === 3 &&
+					<CreateAccount callback={() => this.setState({state: 2})}/>}
       		</div>
     	)
   	}

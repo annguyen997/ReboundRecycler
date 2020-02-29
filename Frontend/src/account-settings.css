@@ -46,7 +46,7 @@
 
 #accountName>h1{
 	margin: 0;
-	padding: 0;
+	padding: 3px 5px;
 }
 
 #edit_accountName{
@@ -63,4 +63,28 @@
 #edit_accountName:focus{
 	outline: none;
 	background: #dd99;
+}
+
+#accountBio{
+	font-size: 1rem;
+	margin: 45px 0;
+}
+
+#accountBio>p{
+	margin: 0;
+	padding: 3px 5px;
+
+	height: 4rem;
+}
+
+#edit_accountBio{
+	background: #dd96;
+	font-size: 1rem;
+	box-shadow: none;
+	border: 0px solid transparent;
+	border-radius: 10px;
+	width: 100%;
+	height: 4rem;
+	padding: 3px 5px;
+	margin: 0;
 }

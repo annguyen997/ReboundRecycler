@@ -10,19 +10,22 @@ class Main extends Component{
 	constructor(props){
 		super(props)
 		this.state = {
-			token: cookie.load('token'),
-			account: cookie.load('account'),
+			token: this.props.token,
+			account: this.props.account,
 			picture: "",
 			state: 0,
 			picture_state: 0,
+			editName: false,
+			editBio: false,
 		}
 
 		this.setLoggedIn = this.setLoggedIn.bind(this)
 		this.setToken = this.setToken.bind(this)
 		this.setAccount = this.setAccount.bind(this)
 		this.getAccountPicture = this.getAccountPicture.bind(this)
+		this.postAccountChange = this.postAccountChange.bind(this)
 		this.postAccountName = this.postAccountName.bind(this)
-		this.editField = this.editField.bind(this)
+		this.postAccountBio = this.postAccountBio.bind(this)
 	}
 
 	componentDidMount() {
@@ -88,43 +91,74 @@ class Main extends Component{
 		})
 	}
 
-	postAccountName = data => {
-		//fetch(`http://localhost:8080/api/account/name`, {
-    	fetch(`https://test-b4gvhsdddq-uc.a.run.app/api/account/name`, {
-    		method: 'POST',
+	postAccountName = () => {
+		if(this.state.account.name !== this.props.account.name){
+			this.postAccountChange({name: this.state.account.name})
+			.then(json => {
+				if('msg' in json && json.msg === "True"){
+					this.props.setAccount({...this.props.account, name: this.state.account.name})
+					this.setState({
+						editName: false
+					})
+				}
+			})
+			.catch(err => {
+				console.log('caught it!',err)
+				this.setState({
+					errorMsg: err.message,
+					state: -1,
+					editName: false,
+					editBio: false,
+				})
+			})
+		}else{
+			this.setState({
+				editName: false
+			})
+		}
+	}
+
+	postAccountBio = () => {
+		if(this.state.account.bio !== this.props.account.bio){
+			this.postAccountChange({bio: this.state.account.bio})
+			.then(json => {
+				if('msg' in json && json.msg === "True"){
+					this.props.setAccount({...this.props.account, bio: this.state.account.bio})
+					this.setState({
+						editBio: false
+					})
+				}
+			})
+			.catch(err => {
+				console.log('caught it!',err)
+				this.setState({
+					errorMsg: err.message,
+					state: -1,
+					editName: false,
+					editBio: false,
+				})
+			})
+		}else{
+			this.setState({
+				editBio: false
+			})
+		}
+	}
+
+	postAccountChange = data => {
+    	return fetch(`${process.env.REACT_APP_REST_ENDPOINT}/api/account`, {
+    		method: 'UPDATE',
     		headers: {
 				"Accept": "application/json",
         		"Content-Type": "application/json",
 				"X-AUTH": this.props.token
-      		}
+			  },
+			  body: JSON.stringify(data)
     	})
 		.then(res => res.json())
 		.then(res => {console.log(res);return res;})
-		.then(json => {
-			this.setState({
-				account:  json,
-				state: 2,
-			})
-		})
-		.catch(err => {
-			console.log('caught it!',err)
-			this.setState({
-				errorMsg: err.message,
-				account:  undefined,
-				state: -1,
-				editName: false,
-				editBio: false,
-			})
-		})
+		
   	}
-
-	editField = _fieldName => {
-		console.log("hi?")
-		const fieldName = _fieldName
-		return () => {
-			ReactDOM.render(<input id="editor"></input>, document.getElementById(fieldName))
-		}
-	}
 
 	render(){
 	return (
@@ -143,31 +177,44 @@ class Main extends Component{
 					{!this.state.editName &&
 						<div id="accountName">
 							<h1 id="nameH1">{this.state.account.name}</h1>
-							<button className="editField" onClick={() => {this.setState({editName: true})}}>edit</button>
+							<button className="editField" onClick={() => this.setState({editName: true})}>edit</button>
 						</div>}
 					{this.state.editName &&
 						<div id="accountName">
-							<input id="edit_accountName"/>
-							<button 
-								className="saveField" 
-								onClick={
-									() => {
-										this.postAccountName({"name": this.state.account.name})
-										this.setState({editName: false})
-									}
+							<input 
+								id="edit_accountName"
+								value={this.state.account.name}
+								onChange={
+									e => this.setState({account: {...this.state.account, name: e.target.value}})
 								}
+							/>
+							<button 
+								className="saveField"
+								onClick={this.postAccountName}
 							>
 								edit
 							</button>
 						</div>}
 					{!this.state.editBio &&
-						<div id="accountDesc">
+						<div id="accountBio">
 							<p>{this.state.account.bio}</p>
-							<button className="editField" onClick={() => {this.setState({editBio: true})}}>edit</button>
+							<button className="editField" onClick={() => this.setState({editBio: true})}>edit</button>
 						</div>}
 					{this.state.editBio &&
 						<div id="accountBio">
-							<input id="edit_accountBio"/>
+							<textarea 
+								id="edit_accountBio"
+								value={this.state.account.bio}
+								onChange={
+									e => this.setState({account: {...this.state.account, bio: e.target.value}})
+								}
+							/>
+							<button
+								className="saveField"
+								onClick={this.postAccountBio}
+							>
+								edit
+							</button>
 						</div>}
 				</div>	
 			</div>

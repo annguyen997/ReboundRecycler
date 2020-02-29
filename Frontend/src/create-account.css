@@ -1,12 +1,12 @@
-#loginCard{
+#createAccountCard{
 	position: absolute;
 	top: 30vh;
-	left: 37.5vw;
+	left: 25vw;
 
 	display: flex;
 	flex-direction: column;
 
-	width: 25vw;
+	width: 50vw;
 	height: 50vh;
 
 	background: mintcream;
@@ -17,8 +17,26 @@
 	box-shadow: 3px 3px 4px 1px black;
 }
 
-#usernameField{
-	height: calc(35% - 20px);
+#createAccountCardFields{
+	display: flex;
+	flex-direction: row;
+
+	width: 100%;
+	height: 70%;
+}
+
+#createAccountCardFields>#leftField{
+	width: 50%;
+	height: 100%;
+}
+
+#createAccountCardFields>#rightField{
+	width: 50%;
+	height: 100%;
+}
+
+.textField{
+	height: calc(30% - 20px);
 	width: calc(100% - 50px);
 	
 	padding: 5px 20px 4px;
@@ -32,18 +50,27 @@
 	border-bottom: 1px solid black;
 }
 
-#passwordField{
-	height: calc(35% - 20px);
-	width: calc(100% - 50px);
-	
-	padding: 5px 20px;
-	margin: 5px;
+#usernameEntryContainer{
+	display: flex;
+	flex-direction: row;
+	width: 100%;
+}
 
-	font-size: 2rem;
-	
-	border: 0;
+#usernameEntry{
+	width: calc(100% - 70px);
+}
 
-	border-bottom: 1px solid black;
+#usernameAvailability{
+	width: 30px;
+}
+
+#usernameAvailability>{
+	text-align: center;
+}
+
+#passwordEntry{
+
+	font-size: 1rem;
 }
 
 #loginMessage{
@@ -81,7 +108,7 @@
 	border-radius: 2px;
 }
 
-#loginButton{
+#backButton{
 	height: calc(100% - 10px);
 	width: calc(50% - 10px);
 
@@ -89,8 +116,8 @@
 
 	border: 0;
 
-	color: white;
-	background: mediumseagreen;
+	color: black;
+	background: transparent;
 
 	border: 0;
 	border-radius: 2px;
