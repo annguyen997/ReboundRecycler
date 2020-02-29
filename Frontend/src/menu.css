@@ -17,11 +17,19 @@
 
 .menu_item{
     width: 16%;
-    margin: 5px 1%;
+    margin: auto 1%;
     text-align: center;
 
     border: 1px solid transparent;
     border-radius: 50px;
+
+    text-decoration: none;
+    color: black;
+}
+
+.menu_item>a{
+    text-decoration: none;
+    color: black;
 }
 
 .menu_item:hover{
@@ -31,6 +39,9 @@
 #menu_element_parent{
     display: flex;
     flex-direction: row;
+
+    justify-content: center;
+    vertical-align: middle;
 }
 
 #menu_center{
@@ -50,7 +61,9 @@
 
 #menu_account{
     display: flex;
-    width: 50%;
+    justify-content: center;
+    vertical-align: middle;
+    width: 85%;
 }
 
 #menu_account>#menu_thumbnail{
@@ -67,9 +80,15 @@
 }
 
 #menu_account>#menu_account_name{
-    width: 75%;
+    margin: auto;
+    width: calc(100% - 32px - 10px);
 }
 
 #menu_logout{
-    width: 50%;
+    width: 15%;
+    margin: auto;
+}
+
+#menu_logout>p{
+    margin: auto;
 }

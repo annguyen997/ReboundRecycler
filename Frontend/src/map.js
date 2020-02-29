@@ -14,7 +14,6 @@ class Map extends Component{
 
     this.init_map = this.init_map.bind(this)
     this.render_bounty = this.render_bounty.bind(this)
-    this.accept_bounty = this.accept_bounty.bind(this) 
     const options: LoaderOptions = {/* todo */}
 	  this.loader = new Loader(`${process.env.REACT_APP_MAP_API_KEY}`, options)
   }
@@ -82,32 +81,6 @@ class Map extends Component{
     )
   }
 
-  accept_bounty = _id => {
-    let id = _id["$oid"]
-    console.log(id)
-    fetch(`${process.env.REACT_APP_REST_ENDPOINT}/api/bounty/${id}`, {
-        method: 'post',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({"state":"taken"})
-    })
-    .then(res => res.json())
-    .then(res => this.setState({viewCard: res}))
-    .then(res => {
-      fetch(`${process.env.REACT_APP_REST_ENDPOINT}/api/bounty/${id}`, {
-        method: 'GET',
-        headers: {
-          "Accept": "application/json",
-        }
-      })
-      .then(res => res.json())
-      .then(res => this.setState({viewCard: res}))
-      .catch(err => console.log(`Error on getting bounty: ${err}`))
-    })
-    .catch(err => console.log(`Error on getting bounty: ${err}`))
-    
-  }
 
   render_bounty = bounty => {
     const _bounty = bounty
