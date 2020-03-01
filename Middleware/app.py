@@ -16,29 +16,13 @@ client = createMongoClient(env.get_env("url").format(env.get_env("password")))
 sessions = {
 }
 
-"""MAIN"""
-@app.route('/', methods=['POST', 'GET'])
-def index():
-    if request.method == 'POST':
-        task_content = request.form['content'] #POST body
-        return ""
-        """
-        try:
-            db.session.add(new_task)
-            db.session.commit()
-            return redirect('/')
-        except:
-            return 'There was an issue loading your task to the application'
-        """
-    elif request.method == 'GET': #Render the page. 
-        """
-        data = read_bounties(client) 
-        return render_template('index.html', data=data)
-        """
-        return "Homepage TODO"
+###API Level Test###
+@app.route('/api/test', methods = ['GET'])
+def back_end_test():
+    if request.method == 'GET':
+        return json.dumps({"msg": "return from back-end server"})
     else:
-        return None
-
+        return "Bad method 405", 405
 
 ###Special Getters###
 #@app.route('/api/auth', methods = ['GET', 'DELETE'])
