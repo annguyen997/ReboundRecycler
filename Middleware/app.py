@@ -103,18 +103,24 @@ def allBountiesDetails():
 
     return "{}".format(data)
 
-@app.route('/api/bounty/add')
-def createBounty(userID):
+@app.route('/api/bounties')
+def createBounty():
     if request.method == 'POST':
-        new_bounty = {"name" : request.form["name"], "user_id" : userID, "location": {"lng": 0.0, "lat": 0.0}, "price" : request.form["price"], "state" : "untaken", "desc" : request.form["description"], "img" : None}
-        create_bounty(client, new_bounty)
+        #new_bounty = {"name" : request.form["name"], "user_id" : userID, "location": {"lng": 0.0, "lat": 0.0}, "price" : request.form["price"], "state" : "untaken", "desc" : request.form["description"], "img" : None}
+        #create_bounty(client, new_bounty)
+        return json.dumps({"err": "unimplemented"}), 501
+    else:
+        return json.dumps({"err": "Bad method 405"}), 405
 
 #CRUDs
 @app.route('/api/jobs', methods=["POST"])
-def createJob(userID, bountyID):
+def createJob():
     if request.method == 'POST':
-        new_job = {"user_id" : userID, "bounty_id" : bountyID, "state" : ""}
-        create_job(client, new_job)
+        #new_job = {"user_id" : userID, "bounty_id" : bountyID, "state" : ""}
+        #create_job(client, new_job)
+        return json.dumps({"err": "unimplemented"}), 500
+    else:
+        return json.dumps({"err": "Bad method 405"}), 405
 
 @app.route('/api/bounty/<bounty_id>', methods = ['GET', 'POST', 'DELETE'])
 def bountyCRUD(bounty_id):
@@ -145,30 +151,74 @@ def bountyCRUD(bounty_id):
         did_delete = delete_bounty(client, bountyID, userID)
         return did_delete
     else:
-        return "Unimplemented. There is a problem understanding the request."
-        # POST Error 405 Method Not Allowed
+        return json.dumps({"err": "Bad method 405"}), 405
 
-@app.route('/api/account', methods = ['GET', 'POST'])
-@cross_origin()
-def getUser():
-    """Find a user_id given a supplied username"""
+@app.route('/api/account', methods = ['GET', 'POST', 'UPDATE'])
+@cross_origin(allow_headers=['Content-Type', 'X-AUTH'], methods=['GET', 'POST', 'UPDATE'])
+def accountCRUD():
     if request.method == 'GET':
+        """Find a user_id given a supplied username"""
         print(request.headers)
         session = request.headers.get('X-AUTH')
-        if session is None:
+        if session is None or session not in sessions:
             return json.dumps({})
         uid = sessions[session]
         user = read_userFromSession(uid, client)
         print(user)
         return user
+    elif request.method == 'UPDATE':
+        session = request.headers.get('X-AUTH')
+        if session is None or session not in sessions:
+            return json.dumps({}), 403
+        name = request.json.get('name')
+        bio = request.json.get('bio')
+        if name is None and bio is None:
+            return json.dumps({'err': 'No fields to update'}), 400
+        uid = sessions[session]
+        did_update = update_account(client, uid, name, bio)
+        return json.dumps({"msg": str(did_update)}), 200 if did_update else 500
     elif request.method == "POST":
         """Make a new user account"""
         """This will require email verification before writing to the DB"""
         """pw_hash, pw_salt will be created here"""
-        new_user = {"username" : request.form['username'], "pw" : request.form['pw'], "bio" : "", "picture" : None , "thumbnail": None}
+        print("account creation request")
+        new_user = {"email": request.json.get("email"), "username" : request.json.get('username'), "password" : request.json.get('password'), "name": request.json.get('name'), "bio" : "", "picture" : None , "thumbnail": None}
+        print(new_user)
+        success = True
         create_user(client, new_user)
+        return json.dumps({"msg": str(success)}), 200
     else:
-        return "Bad method 405"
+        return json.dumps({"err": "Bad method 405"}), 405
+
+@app.route('/api/account/username/<username>', methods = ['GET'])
+@cross_origin(methods=['GET'])
+def accountUsernameCRUD(username):
+    """Say whether or not the username is taken"""
+    if request.method == 'GET':
+        sanitizedUsername = username.encode('utf-8')
+        isUsernameTaken = read_usernameFromDB(username, client)
+        availabilityStatus =  'unavailable' if isUsernameTaken else 'available'
+        return json.dumps({'isAvailable': availabilityStatus}), 200
+    else:
+        return json.dumps({"err": "Bad method 405"}), 405
+
+@app.route('/api/account/name', methods = ['POST'])
+@cross_origin()
+def accountNameCRUD():
+    """Update (post) an account name, requires an authorization token"""
+    if request.method == 'POST':
+        session = request.headers.get('X-AUTH')
+        if session is None or session not in sessions:
+            return json.dumps({}), 403
+        name = request.json.get('name')
+        if name is None:
+            return json.dumps({'err': 'no name given'}), 400
+        uid = sessions[session]
+        did_update = update_account_name(client, uid, name)
+        return json.dumps({"msg": str(did_update)}), 200 if did_update else 500
+    else:
+        return json.dumps({"err": "Bad method 405"}), 405
+
 
 @app.route('/api/account/picture/<u_id>', methods = ['GET'])
 @cross_origin()
@@ -186,53 +236,3 @@ def getUserThumbnail(u_id):
 
 if __name__ == "__main__":
     app.run(debug=True,host='0.0.0.0',port=int(os.environ.get('PORT', 8080)))
-
-
-#OLD MAIN FOR REFERENCE PURPOSES
-"""
-@app.route('/', methods=['POST', 'GET']) #URL route string of the app 
-def hello_world():
-
-    if request.method == 'POST':
-        task_content = request.form['content']
-        new_task = Todo(content=task_content)
-
-        try:
-            db.session.add(new_task)
-            db.session.commit()
-            return redirect('/')
-        except:
-            return 'There was an issue adding your task'
-
-    else: #Render the page. 
-        tasks = Todo.query.order_by(Todo.date_created).all()
-        #target = os.environ.get('TARGET', 'World')
-        #return 'Hello {}!\n'.format(target)
-        return render_template('index.html', tasks=tasks)
-
-@app.route('/delete/<int:id>')
-def delete(id):
-    task_to_delete = Todo.query.get_or_404(id)
-    
-    try:
-        db.session.delete(task_to_delete)
-        db.session.commit()
-        return redirect('/')
-    except:
-        return "There was a problem deleting that task."
-
-@app.route('/update/<int:id>', methods=['GET', 'POST'])
-def update(id):
-    task = Todo.query.get_or_404(id)
-
-    if request.method == 'POST':
-        task.content = request.form['content']
-
-        try:
-            db.session.commit()
-            return redirect('/')
-        except:
-            return 'There was an issue updating your task.'
-    else:
-        return render_template('update.html', task=task)
-"""

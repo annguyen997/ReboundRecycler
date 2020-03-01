@@ -8,6 +8,8 @@ import pymongo
 from pymongo import ReadPreference
 
 import hashlib
+import random
+import string
 
 def createMongoClient(url):
     client = pymongo.MongoClient(url)
@@ -41,7 +43,24 @@ def authenticate(client = None, username = None, password = None):
     return (userID, session)
 
 #Create
-def create_user(client = None, user = {}):
+def create_user(client = None, userData = {}):
+    letters = string.ascii_lowercase
+    pw_salt = ''.join(random.choice(letters) for i in range(8))
+    
+    hasher = hashlib.sha256()
+    hasher.update(pw_salt.encode('utf-8'))
+    hasher.update(userData['password'].encode('utf-8'))
+    pw_hash = hasher.hexdigest()
+    user = {
+        "username": userData["username"], #sanitize
+        "email": userData["email"], #sanitize
+        "pw_hash": pw_hash,
+        "pw_salt": pw_salt,
+        "name": userData["name"], #sanitize
+        "bio": userData["bio"], #sanitize
+        "picture": userData["picture"], #sanitize
+        "thumbnail": userData["thumbnail"] #sanitize
+    }
     with client.start_session(causal_consistency=True) as sess:
         collection = client.rebound.user
         collection.insert_one(user, session=sess)
@@ -106,6 +125,19 @@ def read_userFromSession(user_id, client = None):
         user = readonly.find_one({"_id": ObjectId(user_id)}, {"pw": 0, "picture": 0, "thumbnail": 0}, session=sess)
     return dumps(user)
 
+def read_usernameFromDB(username, client):
+    exists = False
+    with client.start_session(causal_consistency=True) as sess:
+        collection = client.rebound.user
+        readonly = collection.with_options(
+            read_preference=ReadPreference.SECONDARY)
+        user = readonly.find_one({"username": username}, {"_id": 0, "name": 0,"pw_hash": 0, "pw_salt": 0, "bio": 0, "picture": 0, "thumbnail": 0}, session=sess)
+        print(user)
+        if user != None:
+            exists = True
+    print(exists)
+    return exists
+
 def read_pictureFromUID(client = None, user_id = None):
     image_string = ""
     with client.start_session(causal_consistency=True) as sess:
@@ -147,12 +179,18 @@ def update_bounty(client = None, bounty_id = None, new_data = {}):
         collection = client.rebound.bounty
         collection.update_one({"_id": ObjectId(bounty_id)}, {"$set": {"name" : new_data["name"], "price": new_data["price"], "state": new_data["state"], "desc" : new_data["desc"]}}, session=sess)
 
-def update_account_name(client = None, account_id = None, new_name = None):
+def update_account(client = None, account_id = None, new_name = None, new_bio = None):
+    account_updates = {}
+    if new_name != None:
+        account_updates["name"] = new_name
+    if new_bio != None:
+        account_updates["bio"] = new_bio
     with client.start_session(causal_consistency=True) as sess:
         collection = client.rebound.user
 
-        #TODO - make this secure lol
-        collection.update_one({"_id": ObjectId(account_id)}, {"$set": {"name": new_name}}, session=sess)
+        #TODO - harden this, make sure entry is SAFE
+        collection.update_one({"_id": ObjectId(account_id)}, {"$set": account_updates}, session=sess)
+    return True
 
 #Delete
 def delete_bounty(client = None, bounty_id = None, user_id = None):
