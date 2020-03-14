@@ -1,3 +1,5 @@
+#TODO: Singleton-ize me
+#https://python-3-patterns-idioms-test.readthedocs.io/en/latest/Singleton.html
 import time
 
 import bson
@@ -15,6 +17,23 @@ def createMongoClient(url):
     client = pymongo.MongoClient(url)
     return client
 #db = client.test
+
+class mongoClient:
+    class mongoClientInstance:
+        def __init__(self, url):
+            self.client = pymongo.MongoClient(url)
+        def getClient(self):
+            return self.client
+    instance = None
+    def __init__(self, url):
+        if not mongoClient.instance:
+            print("creating mongo singleton")
+            print("url for mongo singleton: {}".format(url))
+            mongoClient.instance = mongoClient.mongoClientInstance(url)
+        else:
+            print("using existing mongo singleton")
+    def getClient(self):
+        return self.instance.getClient()
 
 def dbAction(action = None, args = None):
     with client.start_session() as sess:

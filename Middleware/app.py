@@ -1,20 +1,16 @@
 import os
 import json
+
 from environment import *
 from backend.mongo import * 
+
+from endpoints.auth import auth, sessionManager
+
 from flask import Flask, request
 from flask_cors import CORS, cross_origin
 
-"""Configuration"""
-env = environment("app.env")
-
 app = Flask(__name__)
 CORS(app, resources={r"/api/*": {"origins": "*"}})
-
-client = createMongoClient(env.get_env("url").format(env.get_env("password")))
-
-sessions = {
-}
 
 ###API Level Test###
 @app.route('/api/test', methods = ['GET'])
@@ -26,12 +22,36 @@ def back_end_test():
 
 ###Special Getters###
 #@app.route('/api/auth', methods = ['GET', 'DELETE'])
-@app.route('/api/auth', methods = ['GET'])
+app.register_blueprint(auth)
+'''
+@app.route('/api/auth', methods = ['POST'])
 @cross_origin()
 def login():
     print("/api/auth hit")
     """Find and authenticate the user, give the user a bearer token"""
-    if request.method == 'GET':
+    if request.method == 'POST':
+        print(request.json)
+        username, password = request.json.get('username'), request.json.get('password')
+        (userID, session) = authenticate(client, username, password)
+        if session is not None:
+            sessions[session] = userID
+            print("Successfully created session {}".format(session))
+            return json.dumps({"token": str(session)})
+        else:
+            print("Authentication error")
+            return json.dumps({}), 401
+        print("No authentication header")
+        return "", 404
+    else:
+        return "Bad method 405", 405
+'''
+'''
+@app.route('/api/auth', methods = ['POST'])
+@cross_origin()
+def login():
+    print("/api/auth hit")
+    """Find and authenticate the user, give the user a bearer token"""
+    if request.method == 'POST':
         session = "None"
         if request.authorization:
             username = request.authorization['username']
@@ -66,6 +86,7 @@ def logout():
             return "", 404
     else:
         return "Bad method 405", 405
+'''
 
 @app.route('/api/bounties/map', methods = ['GET'])
 @cross_origin()
@@ -144,12 +165,17 @@ def accountCRUD():
         """Find a user_id given a supplied username"""
         print(request.headers)
         session = request.headers.get('X-AUTH')
-        if session is None or session not in sessions:
+        #if session is None or session not in sessions:
+        if not sessionManager().goodSession(session):
             return json.dumps({})
-        uid = sessions[session]
-        user = read_userFromSession(uid, client)
-        print(user)
-        return user
+        #uid = sessions[session]
+        uid = sessionManager().getUserID(session)
+        if uid:
+            user = read_userFromSession(uid, client)
+            print(user)
+            return user, 200
+        else:
+            return json.dumps({"err": "session not found"}), 401
     elif request.method == 'UPDATE':
         session = request.headers.get('X-AUTH')
         if session is None or session not in sessions:
@@ -219,4 +245,11 @@ def getUserThumbnail(u_id):
     return image_string
 
 if __name__ == "__main__":
+    """Configuration"""
+    env = environment("app.env")
+    url = env.get_env("url").format(env.get_env("password"))
+    client = mongoClient(url).getClient()
+
+
+
     app.run(debug=True,host='0.0.0.0',port=int(os.environ.get('PORT', 8080)))
