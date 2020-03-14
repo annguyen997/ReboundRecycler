@@ -44,6 +44,7 @@ class Main extends Component{
 	setLoggedIn = () => {
 		console.log(`account-settings: login callback`)
 		if(this.props.token !== undefined && this.props.account !== undefined){
+			console.log(`account-settings: login callback is successful`)
 			this.setState({
 				state: 2,
 				account: this.props.account //TODO: Make sure this doesn't come back to bite you!

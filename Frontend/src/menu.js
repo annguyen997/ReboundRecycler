@@ -21,7 +21,7 @@ class Menu extends Component{
 	render(){
 		return (
       		<div id="menu"> 
-        		<a href="/map" className="menu_item">
+        		<a href="/" className="menu_item">
         			<p>Map</p>
         		</a>
 				<a href="/listings" className="menu_item">

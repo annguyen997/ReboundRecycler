@@ -9,6 +9,8 @@ class Main extends Component{
     	super(props)
     	this.state = {
 			state: 2,
+			username: "",
+			password: "",
     	}
 	
 		this.login = this.login.bind(this)
@@ -31,9 +33,12 @@ class Main extends Component{
 		this.setState({
 			state: 1
 		})
-		let token = await this.sendAuthRequest(`${this.state.username}:${this.state.password}`)
+		let token = await this.sendAuthRequest(this.state.username, this.state.password)
 		if(token !== undefined){
-			if(await this.getAccountData(token) !== undefined){
+			this.props.setToken(token)
+			let account = await this.getAccountData(token)
+			if(account !== undefined){
+				this.props.setAccount(account)
 				this.props.setLoggedIn()
 			}else{
 				console.log(`login: Did not set user as logged in, getAccountData returned undefined`)
@@ -41,22 +46,24 @@ class Main extends Component{
 		}
 	}
 
-	sendAuthRequest = authString => {
+	sendAuthRequest = (username, password) => {
     	return fetch(`${process.env.REACT_APP_REST_ENDPOINT}/api/auth`, {
-    		method: 'GET',
+    		method: 'POST',
 			headers: {
         		"Content-Type": "application/json",
-				"Authorization": `Basic ${Buffer.from(authString).toString("base64")}`
-    		}
+				"Authorization": `Basic ${Buffer.from(`${username}:${password}`).toString("base64")}`
+			},
+			body: JSON.stringify({})
     	})
     	.then(res => res.json())
     	.then(json => {
 			if("token" in json && json.token !== "None"){
-				this.props.setToken(json.token)
 				return json.token
 			}else{
 				this.setState({
 					state: 2,
+					username: "",
+					password: "",
 					failMsg: "Invalid Credentials"
 				})
 				return undefined
@@ -84,16 +91,17 @@ class Main extends Component{
 		})
 		.then(res => res.json())
 		.then(account => {
-			this.setState({
-				state: 3
-			})
-			this.props.setAccount(account)
-			return account
+			//JavaScript is awful
+			if(Object.keys(account).length !== 0){
+				return account
+			}else{
+				return Promise.reject(`login: account object was empty`)
+			}
 		})
 		.catch(err => {
 			console.log('login error',err)
 			this.setState({
-				errorMsg: err.message,
+				errorMsg: err,
 				account:  undefined,
 				state: 0,
 			})
