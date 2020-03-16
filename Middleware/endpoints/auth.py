@@ -23,6 +23,11 @@ class sessionManager:
                 return None
         def goodSession(self, sessionToken):
             return sessionToken in self.sessions
+        def deleteSession(self, sessionToken):
+            if sessionToken in self.sessions:
+                del self.sessions[sessionToken]
+                return True
+            return False
     instance = None
     def __init__(self):
         if not sessionManager.instance:
@@ -38,6 +43,8 @@ class sessionManager:
         return self.instance.getUserID(sessionToken)
     def goodSession(self, sessionToken):
         return self.instance.goodSession(sessionToken)
+    def deleteSession(self, sessionToken):
+        return self.instance.deleteSession(sessionToken)
 
 sessions = {
 }
@@ -45,7 +52,7 @@ sessions = {
 auth = Blueprint('authentication', __name__)
 
 ###Special Getters###
-@auth.route('/api/auth', methods = ['POST'])
+@auth.route('/api/auth', methods = ['POST', 'DELETE'])
 @cross_origin()
 def login():
     print("/api/auth hit")
@@ -63,5 +70,9 @@ def login():
             return json.dumps({}), 401
         print("No authentication header")
         return "", 404
+    elif request.method == 'DELETE':
+        session = request.headers.get('X-AUTH')
+        sessionManager().deleteSession(session)
+        return json.dumps({}), 200
     else:
         return "Bad method 405", 405

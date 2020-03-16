@@ -158,17 +158,16 @@ def bountyCRUD(bounty_id):
     else:
         return json.dumps({"err": "Bad method 405"}), 405
 
-@app.route('/api/account', methods = ['GET', 'POST', 'UPDATE'])
-@cross_origin(allow_headers=['Content-Type', 'X-AUTH'], methods=['GET', 'POST', 'UPDATE'])
+@app.route('/api/account', methods = ['GET', 'POST', 'PUT'])
+@cross_origin(allow_headers=['Content-Type', 'X-AUTH'], methods=['GET', 'POST', 'PUT'])
 def accountCRUD():
+    print('account')
     if request.method == 'GET':
         """Find a user_id given a supplied username"""
         print(request.headers)
         session = request.headers.get('X-AUTH')
-        #if session is None or session not in sessions:
         if not sessionManager().goodSession(session):
-            return json.dumps({})
-        #uid = sessions[session]
+            return json.dumps({}), 403
         uid = sessionManager().getUserID(session)
         if uid:
             user = read_userFromSession(uid, client)
@@ -176,17 +175,19 @@ def accountCRUD():
             return user, 200
         else:
             return json.dumps({"err": "session not found"}), 401
-    elif request.method == 'UPDATE':
+
+    elif request.method == 'PUT':
         session = request.headers.get('X-AUTH')
-        if session is None or session not in sessions:
+        if not sessionManager().goodSession(session):
             return json.dumps({}), 403
         name = request.json.get('name')
         bio = request.json.get('bio')
         if name is None and bio is None:
             return json.dumps({'err': 'No fields to update'}), 400
-        uid = sessions[session]
+        uid = sessionManager().getUserID(session)
         did_update = update_account(client, uid, name, bio)
         return json.dumps({"msg": str(did_update)}), 200 if did_update else 500
+
     elif request.method == "POST":
         """Make a new user account"""
         """This will require email verification before writing to the DB"""
@@ -200,15 +201,17 @@ def accountCRUD():
     else:
         return json.dumps({"err": "Bad method 405"}), 405
 
-@app.route('/api/account/username/<username>', methods = ['GET'])
+@app.route('/api/account/<username>/exists', methods = ['GET'])
 @cross_origin(methods=['GET'])
 def accountUsernameCRUD(username):
     """Say whether or not the username is taken"""
     if request.method == 'GET':
-        sanitizedUsername = username.encode('utf-8')
-        isUsernameTaken = read_usernameFromDB(username, client)
-        availabilityStatus =  'unavailable' if isUsernameTaken else 'available'
+        sanitizedUsername = '{}'.format(username)
+        print("Checking username: {}".format(sanitizedUsername))
+        usernameTaken = read_usernameFromDB(sanitizedUsername, client)
+        availabilityStatus =  'unavailable' if usernameTaken else 'available'
         return json.dumps({'isAvailable': availabilityStatus}), 200
+        #return json.dumps({}), 200  if usernameTaken else 404
     else:
         return json.dumps({"err": "Bad method 405"}), 405
 
