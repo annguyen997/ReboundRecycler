@@ -44,7 +44,7 @@ class Menu extends Component{
 							<p id="menu_account_name">{this.props.account.name}</p>
 						</a>
 						<a href="/logout" id="menu_logout">
-							<p>x</p>
+							<p>&#x1F6AA;</p>
 						</a>
 					</div>}
         	</div>

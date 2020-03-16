@@ -57,12 +57,21 @@ class Main extends Component{
 		let username = this.state.username
 		if(username !== ""){
 			console.log(`checking username ${username}`)
-			fetch(`${process.env.REACT_APP_REST_ENDPOINT}/api/account/username/${username}`, {
+			fetch(`${process.env.REACT_APP_REST_ENDPOINT}/api/account/${username}/exists`, {
 				method: 'GET',
 				headers: {
 					"Content-Type": "application/json",
 				}
 			})
+			/*.then(res => res.status)
+			.then(status => {
+				if(this.state.username === username){
+					let isAvailable = status === 404 ? 3 : 2
+					this.setState({
+						usernameAvailable: isAvailable,
+					})
+				}
+			})*/
 			.then(res => res.json())
 			.then(json => {
 				if(this.state.username === username){
@@ -215,7 +224,10 @@ class Main extends Component{
 						<div id="loginMessage"><p>{this.state.failMsg}</p></div>
 						<div id="submitFields">
 							<button id="backButton" onClick={this.props.callback}>go back</button>
-							<button id="createAccountButton" onClick={() => this.sendCreateAccountRequest()}>sign up</button>
+							{this.state.usernameAvailable === 2 &&
+								<button id="createAccountButton">name taken</button>}
+							{this.state.usernameAvailable === 3 &&
+								<button id="createAccountButton" onClick={() => this.sendCreateAccountRequest()}>sign up</button>}
 						</div>
 					</div>}
 				{this.state.state === 3 &&

@@ -27,8 +27,8 @@ class Main extends Component{
 			state: 1
 		})
 		//Temporary solution for CORS issue...
-		return fetch(`${process.env.REACT_APP_REST_ENDPOINT}/api/auth/logout`, {
-    		method: 'GET',
+		return fetch(`${process.env.REACT_APP_REST_ENDPOINT}/api/auth`, {
+    		method: 'DELETE',
 			headers: {
         		"Content-Type": "application/json",
 				"X-AUTH": this.props.token

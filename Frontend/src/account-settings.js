@@ -148,7 +148,7 @@ class Main extends Component{
 
 	postAccountChange = data => {
     	return fetch(`${process.env.REACT_APP_REST_ENDPOINT}/api/account`, {
-    		method: 'UPDATE',
+    		method: 'PUT',
     		headers: {
 				"Accept": "application/json",
         		"Content-Type": "application/json",
@@ -158,7 +158,6 @@ class Main extends Component{
     	})
 		.then(res => res.json())
 		.then(res => {console.log(res);return res;})
-		
   	}
 
 	render(){
