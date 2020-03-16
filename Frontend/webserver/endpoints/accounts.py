@@ -3,7 +3,7 @@ import json
 from utils import *
 
 accounts = Blueprint('account', __name__)
-@accounts.route('/api/account', methods = ['GET', 'POST', 'UPDATE', 'DELETE'])
+@accounts.route('/api/account', methods = ['GET', 'POST', 'PUT', 'DELETE'])
 def accountCRUD():
     print('account')
     if request.method == 'GET':
@@ -15,16 +15,44 @@ def accountCRUD():
             return json.dumps(res), code
         else:
             return json.dumps({}), code
+    elif request.method == 'POST':
+        print('account create')
+        body = {
+            "username": request.json.get("username"),
+            "password": request.json.get("password"),
+            "name": request.json.get("name"),
+            "email": request.json.get("email"),
+        }
+
+        (res, code) = req('post', '/api/account', body = body)
+        if code is 200:
+            print(json.dumps(res))
+            return json.dumps(res), code
+        else:
+            return json.dumps({}), code
+    elif request.method == 'PUT':
+        print('account update')
+        session = request.headers.get('X-AUTH')
+        new_name = request.json.get('name')
+        new_bio = request.json.get('bio')
+        (res, code) = req('put', '/api/account', headers = {'X-AUTH': session}, body = {'name': new_name, 'bio': new_bio})
+        print('account update result {}'.format(code))
+        if code is 200:
+            return json.dumps(res), code
+        else:
+            return json.dumps({}), code
+    elif request.method == 'DELETE':
+        return json.dumps({"err": "Unimplemented 501"}), 501
     else:
         return json.dumps({"err": "Bad method 405"}), 405
 
-#TODO: make this /api/account/<username>/username GET
-@accounts.route('/api/account/username/<username>', methods = ['GET'])
+@accounts.route('/api/account/<username>/exists', methods = ['GET'])
 def accountUsernameCRUD(username):
     """Say whether or not the username is taken"""
     if request.method == 'GET':
-        sanitizedUsername = username.encode('utf-8')
-        (res, code) = req('get', '/api/account/' + sanitizedUsername)
+        sanitizedUsername = str(username.encode('utf-8').decode())
+        (res, code) = req('get', '/api/account/{}/exists'.format(sanitizedUsername))
+        return json.dumps(res), code
     else:
         return json.dumps({"err": "Bad method 405"}), 405
 

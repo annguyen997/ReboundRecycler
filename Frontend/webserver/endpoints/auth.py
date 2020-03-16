@@ -19,6 +19,7 @@ def authenticationCRUD():
                 return json.dumps({}), 401
     elif request.method == 'DELETE':
         session = request.headers.get('X-AUTH')
-        return json.dumps({}), 501
+        (res, code) = req('delete', '/api/auth', headers = {'X-AUTH': session})
+        return json.dumps({}), code
     else:
         return "Bad method 405", 405

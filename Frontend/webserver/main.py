@@ -13,7 +13,7 @@ app = Flask(__name__, static_folder="../build/static", template_folder="../build
 
 #Development only
 from flask_cors import CORS, cross_origin
-CORS(app, resources = {r"/api/*": {"origins": ["http://cookie:3000", "http://192.168.1.242:3000", "http://localhost:3000"]}})
+CORS(app, resources = {r"/api/*": {"origins": ["http://108.18.248.41:3000", "http://192.168.1.242:3000", "http://localhost:3000"]}})
 
 #Front-End Routes
 @app.route("/")
@@ -47,4 +47,4 @@ def back_end_test():
     return json.dumps(data), 200
 
 if __name__ == "__main__":
-    app.run(debug = True, host = '0.0.0.0', threaded = True)
+    app.run(debug = True, host = '0.0.0.0', port = '3003', threaded = True)
